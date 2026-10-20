@@ -12,7 +12,9 @@ tools:
 model:
   - "@advisor"
 thinkingLevel: high
-read-summarize: false
+readSummarize: false
+autoloadSkills:
+  - no-comments
 ---
 
 # Comment Sicko

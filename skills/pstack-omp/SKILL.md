@@ -1,6 +1,6 @@
 ---
 name: pstack-omp
-description: "OMP adapter for poteto-mode. Maps canonical pstack roles and lifecycle protocols to current OMP task agents, batching, isolation, IRC follow-ups, and durable result resources."
+description: "OMP adapter for poteto-mode. Maps canonical pstack roles and lifecycle protocols to current OMP task agents, batching, isolation, agent:// follow-ups, and durable result resources."
 ---
 
 # pstack on OMP
@@ -13,38 +13,42 @@ While this skill is active, its role map is the specific pstack execution contra
 
 Use these exact OMP agent names.
 
-| Canonical role | OMP agent | Contract |
-|---|---|---|
-| `explorer` | `scout` | Read-only repository reconnaissance, trace reduction, narrow audits. |
-| `watcher` | `scout` | Observe one exact generation or external-state transition, then terminate. |
-| `planner` | `designer` | Technical planning, architecture, decomposition, sequencing, and non-visual design candidates. |
-| `designer` | `designer` | Visual, interaction, and product-design candidates. |
-| `reviewer` | `reviewer` | Independent code, protocol, behavioral, or security review. |
-| `researcher` | `librarian` | Source-verified external library, framework, API, protocol, or version research. |
-| `synthesizer` | `reviewer` | Cross-report synthesis, adjudication, and advisory judgment over frozen evidence. |
-| `implementer` | `task` | Bounded implementation or test changes with explicit write ownership. |
-| `owner` | `task` | One coupled multi-step implementation session retained through IRC follow-ups. |
-| `mechanical` | `sonic` | Fully specified low-judgment edits. Ambiguity returns to the root. |
+| Canonical role | OMP agent |
+|---|---|
+| `explorer` | `scout` |
+| `watcher` | `scout` |
+| `planner` | `task` |
+| `designer` | `task` |
+| `reviewer` | `reviewer` |
+| `researcher` | `librarian` |
+| `synthesizer` | `reviewer` |
+| `implementer` | `poteto-agent` |
+| `owner` | `poteto-agent` |
+| `mechanical` | `sonic` |
+
+Role responsibilities live in `skill://poteto-mode`. This table only names the agent.
 
 The canonical OMP roster is closed:
 
 ```text
 scout
-designer
 reviewer
 security-reviewer
 librarian
 task
 sonic
+poteto-agent
+comment-sicko
+seance
 ```
 
-A canonically routed task item's `agent` value must be one of those bundled names. Canonical role labels and model aliases are not agent names.
+A canonically routed task item's `agent` value must be one of those bundled names. Canonical role labels and model aliases are not agent names. `task` is the default worker, so omit `agent` for it.
 
-`poteto-agent` and `comment-sicko` are custom compatibility agents for direct named seams in imported skills. A direct compatibility call may use that custom agent name; ordinary canonical routing never does.
+`poteto-agent` runs `implementer` and `owner` work in poteto's style. `comment-sicko` audits comments for imported skills that name it directly.
 
-### Planning distinction
+### Planning and design
 
-The imported warning about a built-in planning subagent describes a source-host mechanism that bypassed the skill contract. This OMP version has no bundled `plan` agent. Canonical `planner` work uses `designer` with a technical-planning brief and does not pass source-host subagent fields.
+The imported warning about a built-in planning subagent describes a source-host mechanism that bypassed the skill contract. This OMP version has no bundled `plan` agent and no `designer` agent. Canonical `planner` and `designer` work uses `task`. The brief carries the specialization, such as technical planning or visual and interaction design, and no source-host subagent fields.
 
 ### Security review
 
@@ -52,26 +56,41 @@ Use `security-reviewer` for an independent security lane. Keep it read-only and 
 
 ## Task contract
 
-The root performs every `task` call. A child never calls `task`, starts another child, or asks the user directly. Put `Do not call task or start subagents` under `FORBIDDEN` in every child brief.
+The root performs every `task` call. A child never calls `task`, starts another child, or asks the user directly. Put `Do not call task or start subagents` under `FORBIDDEN` in every child brief. `task.maxRecursionDepth` permits nesting, so the brief is what keeps the tree flat, not the host.
 
 Children start without the parent conversation. Every prompt must stand alone. They receive the configured workspace, context files, skills, and approved plan resources supplied by OMP.
 
-### One task
+### Call shape
 
-When the flat schema is active:
+One `task` call is a batch. `context` is shared immutable background rendered into every child's system prompt; `tasks[]` carries the participants. A single dispatch is a one-item batch, not a different schema.
 
 ```json
 {
-  "name": "parser-overflow-worker",
-  "agent": "task",
-  "task": "GOAL\n...\n\nROLE\n...\n\nSCOPE\n...\n\nCONTEXT\n...\n\nACCEPTANCE\n...\n\nVERIFY\n...\n\nTIMEBOX\n...\n\nFORBIDDEN\n...\n\nREPORT\n...\n\nSTANDING\n...",
-  "isolated": true
+  "context": "Repository root, base SHA, frozen artifacts, constraints, and verification context shared by every item.",
+  "tasks": [
+    {
+      "name": "ParserOverflowFix",
+      "solutionSpace": "one fix: bounds check in parse_header, call site given",
+      "task": "GOAL\n...\n\nROLE\n...\n\nSCOPE\n...\n\nCONTEXT\n...\n\nACCEPTANCE\n...\n\nVERIFY\n...\n\nTIMEBOX\n...\n\nFORBIDDEN\n...\n\nREPORT\n...\n\nSTANDING\n..."
+    }
+  ]
 }
 ```
 
-When batch mode is active, use a one-item `tasks[]` call instead of inventing a per-call batch switch.
+Required per item: `task` and `solutionSpace`. `solutionSpace` states how open-ended the child's problem is, not how much work it is: whether the fix is given, or which causes and designs remain open. It never mentions sibling items or coordination.
 
-Use `isolated: true` for a writer that needs a dedicated worktree. Read the returned isolation metadata and verify the patch, branch, or applied change OMP reports. Use a non-isolated session for a long-lived owner that must accept IRC follow-ups in the same workspace.
+`name` is CamelCase, at most 32 characters, unique within the call. It becomes the child's `agent://` identifier, so choose a name the root can still recognize an hour later.
+
+Optional fields exist only when their setting is on. Check before writing one:
+
+- `isolated` requires `task.isolation.enabled` and no plan mode. Use it for a writer that needs a dedicated worktree, then verify the patch, branch, or applied change OMP reports. A long-lived owner that must accept follow-ups in the same workspace stays non-isolated.
+- `effort` (`lo`, `med`, `hi`) requires `task.enableEffort`. When it is off, reasoning depth comes from the agent's configured model role, not from the call.
+- `outputSchema` and `schemaMode` require `task.structured`.
+- `tools` exposes eval-defined tools to the child.
+
+Never put a `model` field in a task item. OMP has none.
+
+Keep briefs short and route bulk through `local://<name>.md`, which parent and children share. Do not paste a large payload inline.
 
 ### Batched panel
 
@@ -82,16 +101,14 @@ Use one batch call for independent participants:
   "context": "Shared immutable repository, base SHA, artifacts, constraints, and verification context.",
   "tasks": [
     {
-      "name": "candidate-a",
-      "agent": "designer",
-      "task": "Standalone brief for architecture candidate A.",
-      "isolated": false
+      "name": "CandidateA",
+      "solutionSpace": "architecture open; candidate A explores the event-sourced shape",
+      "task": "Standalone brief for architecture candidate A."
     },
     {
-      "name": "candidate-b",
-      "agent": "designer",
-      "task": "Standalone brief for architecture candidate B.",
-      "isolated": false
+      "name": "CandidateB",
+      "solutionSpace": "architecture open; candidate B explores the state-machine shape",
+      "task": "Standalone brief for architecture candidate B."
     }
   ]
 }
@@ -101,18 +118,19 @@ Each `name` is unique. `context` contains common immutable material. Each item s
 
 Start every participant in one batch before consuming any verdict. Separate writers with isolated workspaces or disjoint output paths. Freeze candidate artifacts before starting reviewers. Freeze reviewer reports before starting a separate synthesizer session.
 
+`task.maxConcurrency` caps simultaneous children at 32 by default; a larger batch queues rather than failing.
+
 ### Background completion and follow-ups
 
-Background task results arrive through OMP's async result delivery. Record the returned job and agent identifiers. The preview may be truncated.
+Spawns run as background jobs and their results auto-deliver. Record the returned job and agent identifiers. The delivered preview may be truncated.
 
-- Read the full result from `agent://<id>`.
+- Read the full result from `agent://<id>`. Nested children are `agent://<parent>.<child>`.
 - Read the session transcript from `history://<id>` when the report is incomplete, ambiguous, or suspicious.
-- Use `hub` with `op: "jobs"` to inspect jobs and `op: "wait"` with `ids` to wait for specific job IDs.
-- Use `hub` with `op: "list"` to inspect peers and `op: "send"` with `to` for one in-scope correction, answer, authorization, or next coupled phase.
-- Use `hub` with `op: "cancel"` and exact job `ids` for stale, superseded, or scope-breaching work.
-- A follow-up to a parked session revives the same session when the host reports that capability.
+- `read proc://` lists live jobs and `read proc://<id>` inspects one without consuming its delivery.
+- `write agent://<id>` sends one in-scope correction, answer, authorization, or next coupled phase. It revives a parked session. `agent://all` broadcasts and is write-only.
+- `write proc://<id>/kill` cancels stale, superseded, or scope-breaching work.
+- Call `wait` only when the root is blocked with nothing else to do. Never poll.
 - Never steer a reviewer toward a preferred conclusion.
-- Use only operations exposed by the live `hub` schema. Do not invent lifecycle operations.
 - Ignore duplicate terminal deliveries and reject stale artifact generations.
 
 A task result is evidence, not completion. The root inspects the artifact and runs verification.
@@ -160,7 +178,7 @@ Copy the active playbook's standing policy text verbatim when it supplies one.
 3. Record its semantic name, agent ID, job ID, role, scope, isolation mode, base SHA, and expected artifact.
 4. Consume the async result when delivered.
 5. Read `agent://<id>`; inspect `history://<id>` when needed.
-6. Send one IRC correction only within the same unit.
+6. Send one `write agent://<id>` correction only within the same unit.
 7. Inspect the artifact and independently run the promised verification.
 8. Accept the unit only after the parent verifies the reported output.
 
@@ -168,10 +186,10 @@ A role or unit change requires a fresh task.
 
 ### Panel
 
-1. Partition independent slices or race arms with one task per participant.
+1. Partition independent slices or race arms with one task item per participant.
 2. Start every participant in one batch before consuming any result.
 3. Track participants by semantic name and identifiers, never arrival order.
-4. Wait for every required result through `hub` `op: "wait"`, or cancel it explicitly through `hub` `op: "cancel"`.
+4. Let results auto-deliver; `wait` only when nothing else can proceed, and cancel an abandoned arm explicitly with `write proc://<id>/kill`.
 5. Ignore duplicate terminal delivery.
 6. Freeze implementation artifacts, branches, head SHAs, reports, and hashes.
 7. Start every independent reviewer in a new batch only after the candidates are frozen.
@@ -182,10 +200,10 @@ Do not mix implementers, reviewers, or synthesizers in one session. Do not let r
 
 ### Long-lived owner
 
-1. Start one non-isolated `task` session with the complete owner brief.
+1. Start one non-isolated `poteto-agent` session with the complete owner brief.
 2. Record its agent ID and reuse it. Do not start a sibling owner for the same unit.
 3. The owner works only in its assigned branch and paths and never starts children.
-4. Send a `hub` `op: "send"` follow-up only for the next coupled phase, an in-scope correction, an answer resolved from evidence, or explicit authorization.
+4. Send a `write agent://<id>` follow-up only for the next coupled phase, an in-scope correction, an answer resolved from evidence, or explicit authorization.
 5. Require a terminal report at each verification boundary.
 6. Independently verify the boundary before authorizing the next phase.
 7. Stand down on ownership violation, stale generation, or terminal scope breach.
@@ -205,7 +223,7 @@ A watcher observes. It does not fix, merge, authorize, or silently follow a chan
 
 Children resolve uncertainty from source, standing policy, frozen evidence, or the brief. Otherwise they use the safest reversible interpretation and report the assumption, or return `BLOCKED` with the exact missing decision and evidence gathered.
 
-The root resolves a child question and sends the answer through `hub` `op: "send"` to the existing agent. Ask the user only for genuine product preference, unavailable authority, or an irreversible action not covered by standing orders.
+The root resolves a child question and sends the answer with `write agent://<id>` to the existing agent. Ask the user only for genuine product preference, unavailable authority, or an irreversible action not covered by standing orders.
 
 ## Ownership and verification
 
@@ -224,22 +242,10 @@ The root resolves a child question and sends the answer through `hub` `op: "send
 
 OMP resolves a task agent through its current settings, including `modelRoles`, `task.agentModelOverrides`, the agent definition, and normal fallback. Agent selection and model selection are separate decisions.
 
-Do not put a `model` field in a task item. Do not use a model alias as the `agent` value. Configure routing through the installed OMP settings and report the actual resolved model when independence matters.
+Do not put a `model` field in a task item. Do not use a model alias as the `agent` value. Configure routing with `/skill:setup-pstack`, which writes both records into the active profile's `config.yml` after validating every selector against the detected catalog.
 
-Recommended role aliases:
-
-| OMP agent | Recommendation |
-|---|---|
-| `scout` | `@smol` |
-| `designer` | `@designer` |
-| `reviewer` | `@advisor` |
-| `security-reviewer` | `@advisor` |
-| `librarian` | `@smol` |
-| `task` | `@task` or a stronger implementation role |
-| `sonic` | `@tiny` or `@smol` |
-
-These are recommendations, not task payload fields.
+`/skill:setup-pstack --show` prints the live agent-to-role mapping. These are settings, not task payload fields. When a playbook requires model independence, read the resolved model each child reports; if two panel agents resolve to the same model, say so rather than claiming a second opinion.
 
 ## Writing
 
-Apply `unslop` to every reply, brief, report, review, task dispatch, commit message, and agent-facing edit.
+Apply `unslop` (`skill://unslop`) to every reply, brief, report, review, task dispatch, commit message, and agent-facing edit.
