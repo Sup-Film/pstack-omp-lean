@@ -14,7 +14,7 @@ repo นี้ต่อยอดจาก [`dsebban/skills`](https://github.com/
 
 เอกสารภาษาไทยฉบับเต็มอยู่ใน [`docs/th/`](docs/th/README.md) ได้แก่ กระบวนการทำงานทั้งหมด
 ([`workflow.th.md`](docs/th/workflow.th.md)), ขั้นตอนของทั้ง 23 playbook ([`playbooks.th.md`](docs/th/playbooks.th.md))
-และคำอธิบายทั้ง 59 skill ([`skills.th.md`](docs/th/skills.th.md))
+และคำอธิบายทั้ง 61 skill ([`skills.th.md`](docs/th/skills.th.md))
 
 ## ติดตั้ง
 
@@ -33,7 +33,7 @@ omp plugin marketplace add Sup-Film/pstack-omp-lean
 omp plugin install pstack-omp-lean@pstack-omp-lean
 ```
 
-plugin นี้มี skill 59 ตัวใน `skills/` และ subagent 2 ตัวใน `agents/` คือ `poteto-agent` กับ `comment-sicko`
+plugin นี้มี skill 61 ตัวใน `skills/` และ subagent 2 ตัวใน `agents/` คือ `poteto-agent` กับ `comment-sicko`
 ถ้าต้องการติดตั้งให้ใช้ได้แค่ใน repo เดียว ให้เพิ่ม `--scope project`
 
 ### ถ้าเคยติดตั้ง pstack แบบอื่นไว้
@@ -158,8 +158,9 @@ subagent ทุกตัวส่งรายงานรูปแบบเด�
 
 ```bash
 node scripts/validate-skills.mjs                                      # frontmatter และลิงก์ skill:// ทุกตัว
-cd skills/poteto-mode/scripts && bun install && bun test              # 70 เทสต์
+cd skills/poteto-mode/scripts && bun install && bun test              # 84 เทสต์
 cd skills/setup-pstack/scripts && node --test apply-models.test.mjs   # 9 เทสต์
+cd skills/statechart/scripts && node --test test/statechart.test.mjs  # ต้องมี TLC ดู --help
 ```
 
 รันเทสต์ของ script บน Linux, macOS หรือ WSL บน Windows โดยตรง (upstream ก็เป็นเหมือนกัน) จะล้ม 7 เทสต์ของ bun
@@ -168,7 +169,8 @@ cd skills/setup-pstack/scripts && node --test apply-models.test.mjs   # 9 เท
 
 ผลของรุ่นนี้ วัดบน OMP 18.12.6:
 
-- Validator 59 skill, 0 problems เทสต์ของ script 70/70 และ 9/9 บน WSL Ubuntu เท่ากับ upstream
+- Validator 61 skill, 0 problems เทสต์ของ script บน WSL Ubuntu ได้ bun 84/84, `apply-models` 9/9 และ statechart ผ่าน 147
+  ไม่ผ่าน 0 ข้าม 3 (สองข้อต้องใช้ font Type 1 อีกข้อต้องใช้ TLC จาก mise)
 - รันจริงด้วย `omp -p` แบบละ 1 ครั้ง ค่าใช้จ่ายนับเฉพาะ session หลัก
 
 | สถานการณ์ | subagent ที่ spawn | ผล | เวลา | ค่าใช้จ่ายของ session หลัก |
@@ -185,7 +187,8 @@ cd skills/setup-pstack/scripts && node --test apply-models.test.mjs   # 9 เท
 ## ที่มา
 
 - ชุด skill ดัดแปลงจาก [`pstack`](https://github.com/cursor/plugins/tree/main/pstack) ของ Lauren Tan
-  เวอร์ชัน 0.15.28 (`cursor/plugins` ที่ `d457567`)
+  เวอร์ชัน 0.15.32 (`cursor/plugins` ที่ `99b609a`) ไฟล์ `UPSTREAM` บันทึก commit นี้ และ
+  `scripts/sync-upstream.sh` ดึงช่วงถัดไปของ upstream มาใส่ แล้วลิสต์ hunk ที่ต้องพอร์ตเอง
 - งานพอร์ตไป OMP, `pstack-omp`, `fable-deslop` และตัวช่วยตั้งค่าโมเดลของ `setup-pstack` มาจาก
   [`dsebban/skills`](https://github.com/dsebban/skills) ที่ `12c3f3f`
 - `orchestrate-omp` เริ่มจาก [`orchestrate`](https://github.com/provencher/codex-skills/tree/main/orchestrate)

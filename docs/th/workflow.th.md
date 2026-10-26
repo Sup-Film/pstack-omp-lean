@@ -247,7 +247,7 @@ cd "$SKILLDIR/scripts" && bun install
 ## 12. เอกสารที่เกี่ยวข้อง
 
 - [`playbooks.th.md`](playbooks.th.md) ขั้นตอนของทั้ง 23 playbook
-- [`skills.th.md`](skills.th.md) คำอธิบายทั้ง 59 skill
+- [`skills.th.md`](skills.th.md) คำอธิบายทั้ง 61 skill
 - [`../pstack-guide-notes.th.md`](../pstack-guide-notes.th.md) สรุปคู่มือ pstack ของ poteto และการเทียบกับ repo นี้
 - [`../single-loop/inventory.tsv`](../single-loop/inventory.tsv) จุดที่เคย spawn ทั้ง 40 จุดพร้อมคำตัดสิน
 - [`../single-loop/decisions.tsv`](../single-loop/decisions.tsv) บันทึกการตัดสินใจพร้อมหลักฐาน

@@ -12,7 +12,7 @@ Anthropic's [When to fold subagents into your main agent loop](https://claude.co
 and poteto's own [pstack guide](https://x.com/poteto/status/2097732320606507506). A Thai summary of that
 guide, written in our own words and compared against this repository, is in
 [`docs/pstack-guide-notes.th.md`](docs/pstack-guide-notes.th.md). Full Thai documentation of the workflow,
-all 23 playbooks, and all 59 skills is in [`docs/th/`](docs/th/README.md).
+all 23 playbooks, and all 61 skills is in [`docs/th/`](docs/th/README.md).
 
 ## Install
 
@@ -31,7 +31,7 @@ omp plugin marketplace add Sup-Film/pstack-omp-lean
 omp plugin install pstack-omp-lean@pstack-omp-lean
 ```
 
-The plugin brings the 59 skills under `skills/` and the two subagents under `agents/` (`poteto-agent` and
+The plugin brings the 61 skills under `skills/` and the two subagents under `agents/` (`poteto-agent` and
 `comment-sicko`). Add `--scope project` to install for one repository only.
 
 ### Coming from another pstack install
@@ -157,8 +157,9 @@ decision with its evidence.
 
 ```bash
 node scripts/validate-skills.mjs                                      # frontmatter and every skill:// link
-cd skills/poteto-mode/scripts && bun install && bun test              # 70 tests
+cd skills/poteto-mode/scripts && bun install && bun test              # 84 tests
 cd skills/setup-pstack/scripts && node --test apply-models.test.mjs   # 9 tests
+cd skills/statechart/scripts && node --test test/statechart.test.mjs  # needs TLC, see its --help
 ```
 
 Run the script tests on Linux, macOS, or WSL. On native Windows, upstream included, 7 bun tests fail
@@ -167,7 +168,8 @@ because their fake `gh` and `origin` binaries are bash scripts on a `:`-separate
 
 Results for this release, measured on OMP 18.12.6:
 
-- Validator: 59 skills, 0 problems. Script tests: 70/70 and 9/9 on WSL Ubuntu, the same as upstream.
+- Validator: 61 skills, 0 problems. Script tests on WSL Ubuntu: 84/84 bun, 9/9 `apply-models`, and statechart 147 pass,
+  0 fail, 3 skipped (two need Type 1 fonts, one needs TLC from mise).
 - Behavior runs with `omp -p`, one run each. Cost counts the root session only.
 
 | Scenario | Subagents spawned | Result | Wall time | Root cost |
@@ -184,7 +186,8 @@ Not yet exercised: playbooks that need a git remote, such as opening a PR, CI wa
 ## Provenance
 
 - The catalog is adapted from Lauren Tan's [`pstack`](https://github.com/cursor/plugins/tree/main/pstack),
-  version 0.15.28 (`cursor/plugins` at `d457567`).
+  version 0.15.32 (`cursor/plugins` at `99b609a`). `UPSTREAM` records that commit, and
+  `scripts/sync-upstream.sh` applies the next upstream range and lists the hunks to port by hand.
 - The OMP port, `pstack-omp`, `fable-deslop`, and `setup-pstack`'s model helper come from
   [`dsebban/skills`](https://github.com/dsebban/skills) at `12c3f3f`.
 - `orchestrate-omp` began as Eric Provencher's

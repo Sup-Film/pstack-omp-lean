@@ -71,7 +71,21 @@
 
 ## การยืนยันว่ายังใช้กับ OMP ได้
 
-- validator 59 skill, 0 problems
+- validator 59 skill, 0 problems (ก่อนซิงก์ 0.15.32)
 - `check-plan.test.ts` ผ่าน 5/5 และเมื่อรัน template ผ่าน `check-plan.mjs` เหลือปัญหาเดียวคือช่องชื่อโมเดลที่ยังไม่เติม ซึ่งต้นฉบับก็เป็นเหมือนกัน
 - รัน `no-comments` จริงด้วย `omp -p` OMP โหลด `comment-sicko` จาก `.omp/agents` ของ project agent ตัวนี้ลบ comment 6 จุดด้วยตัวเอง
   แล้ว agent หลักแก้บั๊กที่มันชี้ บน OMP 18.12.6
+
+## ซิงก์กับ pstack 0.15.32
+
+หลังตรวจเทียบ 0.15.28 เราดึงของใหม่จาก `cursor/plugins` ช่วง `d457567..99b609a` ด้วย `scripts/sync-upstream.sh`
+ไฟล์ `UPSTREAM` เก็บ commit ล่าสุดที่ซิงก์ รอบหน้ารัน script เดิมใน checkout ที่ใช้ LF แล้วพอร์ตเฉพาะไฟล์ `.rej` ที่มันลิสต์
+
+| ส่วน | สิ่งที่ได้ |
+|---|---|
+| skill ใหม่ | `statechart` วาด model TLA+ เป็น statechart และ `ketchup-video` สรุปงานเป็นวิดีโอสไลด์ |
+| skill ที่เปลี่ยน | `sharpen` กลับไปใช้ prompt เดิมของผู้เขียน คืน prompt ที่เขียนใหม่โดยไม่ทำงาน, `reflect` ห้ามแก้ skill ใน `plugins/cache/`, `create-formal-verification-skill` ให้อ่านผล TLA+ ด้วย `statechart` |
+| script | `check-plan`, `orch` และ `watch-pr` ได้ bug fix ของ upstream ทั้งหมด |
+| ไม่ได้ใช้ | hunk เรียงเลขของ `swarm` เพราะ port เรียงถูกอยู่แล้ว และ hunk ของ `worktree-audit.sh` เพราะ port ตัดส่วนอ่าน transcript ของ Cursor ทิ้งไปแล้ว |
+
+ทุก hunk ในช่วงนี้เป็น T หรือ E ไม่มี S หรือ B ตารางรายไฟล์อยู่ที่ [`../upstream-audit/sync-0.15.32.md`](../upstream-audit/sync-0.15.32.md)

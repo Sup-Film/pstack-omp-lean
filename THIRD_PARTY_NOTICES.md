@@ -2,7 +2,7 @@
 
 ## pstack
 
-This repository's skill catalog, except `pstack-omp`, `orchestrate-omp`, and `fable-deslop`, contains material adapted from [`cursor/plugins`](https://github.com/cursor/plugins/tree/main/pstack), pstack version 0.15.28 (commit `d457567`).
+This repository's skill catalog, except `pstack-omp`, `orchestrate-omp`, and `fable-deslop`, contains material adapted from [`cursor/plugins`](https://github.com/cursor/plugins/tree/main/pstack), pstack version 0.15.32 (commit `99b609a`).
 
 ```text
 MIT License

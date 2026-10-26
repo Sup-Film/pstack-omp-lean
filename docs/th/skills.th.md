@@ -1,6 +1,6 @@
 # แคตตาล็อก skill
 
-เอกสารนี้อธิบาย skill ทั้ง 59 ตัวใน `skills/` ของ [pstack-omp-lean](../../README.th.md) แต่ละตัวมีหัวข้อบอกว่าใช้ทำอะไร เรียกอย่างไร
+เอกสารนี้อธิบาย skill ทั้ง 61 ตัวใน `skills/` ของ [pstack-omp-lean](../../README.th.md) แต่ละตัวมีหัวข้อบอกว่าใช้ทำอะไร เรียกอย่างไร
 ทำตามลำดับอะไร และ spawn subagent หรือไม่ ส่วน playbook ของ `poteto-mode` อยู่ในเอกสารแยกชื่อ [`playbooks.th.md`](playbooks.th.md)
 
 ## skill คืออะไรใน OMP
@@ -40,17 +40,17 @@ Delegation ของ [`poteto-mode`](../../skills/poteto-mode/SKILL.md) แล�
 - [Review](#review)
 - [อื่น ๆ](#อื่น-ๆ)
 - [Principles](#principles)
-- [ดัชนี skill ทั้ง 59 ตัว](#ดัชนี-skill-ทั้ง-59-ตัว)
+- [ดัชนี skill ทั้ง 61 ตัว](#ดัชนี-skill-ทั้ง-61-ตัว)
 
 | กลุ่ม | Skill |
 |---|---|
 | Router | `poteto-mode` |
 | OMP adapter | `pstack-omp`, `orchestrate-omp`, `setup-pstack` |
-| ทำความเข้าใจ | `how`, `why`, `interrogate`, `blast-radius`, `recall`, `ketchup`, `in-your-own-words`, `teach` |
+| ทำความเข้าใจ | `how`, `why`, `interrogate`, `blast-radius`, `recall`, `ketchup`, `ketchup-video`, `in-your-own-words`, `teach` |
 | ออกแบบและสำรวจ | `architect`, `arena`, `swarm`, `figure-it-out`, `sharpen`, `reflect` |
 | ลงมือทำ | `tdd`, `correct`, `bro`, `show-me-your-work`, `benchmark-checklist`, `automate-me` |
 | เขียน | `unslop`, `technical-writing`, `no-comments` |
-| Verification | `create-verification-skill`, `maintain-verification-skill`, `create-formal-verification-skill`, `maintain-formal-verification-skill` |
+| Verification | `create-verification-skill`, `maintain-verification-skill`, `create-formal-verification-skill`, `maintain-formal-verification-skill`, `statechart` |
 | Review | `fable-deslop` |
 | อื่น ๆ | `typescript-best-practices`, `make-bot-ui`, `poteto-help` |
 | Principles | `principle-*` 24 ตัว |
@@ -462,6 +462,33 @@ skill ใช้น้ำเสียงของ [`bro`](#bro) คือคำ�
 
 **ไฟล์ reference.** ไม่มี
 
+### [`ketchup-video`](../../skills/ketchup-video/SKILL.md)
+
+**ใช้ทำอะไร.** เล่าให้ผู้ใช้ตามทันแบบเดียวกับ [`ketchup`](#ketchup) แต่เล่าสิ่งที่เกิดขึ้นเป็นวิดีโอสไลด์สั้นไม่มีเสียง แล้วลิสต์เรื่องที่รอผู้ใช้เป็นข้อความใต้วิดีโอ
+
+**ใช้เมื่อ.** ผู้ใช้อยากดูภาพสรุปงานมากกว่าอ่าน
+
+**ไม่ใช้เมื่อ.** ไม่มีเครื่องมือ render วิดีโอ เช่น `ffmpeg` ให้ใช้ [`ketchup`](#ketchup)
+
+**เรียกอย่างไร.**
+
+```text
+/skill:ketchup-video
+```
+
+**ขั้นตอน.**
+
+1. ทำตาม `ketchup` ช่วงเวลาเริ่มที่ข้อความล่าสุดของผู้ใช้ก่อนเรียก skill การเขียนและ render วิดีโอนอก repo เป็นข้อยกเว้นเดียวของกฎอ่านอย่างเดียว
+2. เขียนสไลด์จาก screenshot, recording, diff และข้อมูลที่งานสร้าง ไม่เกิน 10 สไลด์ สไลด์ละหนึ่งประเด็น ห้ามเป็น bullet list หรือตาราง
+3. render วิดีโอแนวนอนไม่มีเสียงจากสไลด์โดยตรง ค้างแต่ละสไลด์อย่างน้อยหนึ่งวินาทีต่อสามคำ ดึงหนึ่งเฟรมต่อสไลด์มาตรวจก่อนส่ง
+4. ตอบด้วยประโยคเปิดของ `ketchup` ลิงก์ไปยัง path เต็มของไฟล์วิดีโอ งานที่เหลือซึ่ง agent ทำเองได้ และ action item ถ้า render ล้มเหลวให้บอกหนึ่งบรรทัดแล้วให้เฉพาะ action item
+
+**Spawn.** ไม่ spawn
+
+**ผลลัพธ์.** ไฟล์วิดีโอ เช่น mp4 นอก repo และข้อความตอบหนึ่งข้อความ
+
+**ไฟล์ reference.** ไม่มี
+
 ### [`in-your-own-words`](../../skills/in-your-own-words/SKILL.md)
 
 **ใช้ทำอะไร.** ให้ agent เล่าซ้ำด้วยคำของตัวเองว่าเข้าใจเป้าหมายและปัญหาของผู้ใช้อย่างไร
@@ -683,25 +710,29 @@ flowchart TD
 
 ### [`sharpen`](../../skills/sharpen/SKILL.md)
 
-**ใช้ทำอะไร.** ลับงานก่อนเริ่ม ว่าผู้เชี่ยวชาญระดับสูงจะทำอย่างไร ผู้ใช้ต้องการอะไรจริง ๆ และข้อกำหนดละเอียดพอดีหรือไม่
+**ใช้ทำอะไร.** เขียน prompt ใหม่ให้งานลึกขึ้น ไม่ใช่ใหญ่ขึ้น โดยถามว่ามืออาชีพระดับสูงจะทำอะไรเพิ่ม skill คืน prompt ที่เขียนใหม่ และไม่ลงมือทำงานนั้น
 
-**ใช้เมื่อ.** อยากยกระดับงานก่อนเริ่มให้เป็นมืออาชีพมากขึ้น เน้นผลลัพธ์ และไม่ระบุเกินจำเป็น
+**ใช้เมื่อ.** กำลังจะส่ง prompt และอยากให้ได้งานที่ลึกกว่าที่ขอ
 
 **ไม่ใช้เมื่อ.** `SKILL.md` ไม่ระบุ
 
 **เรียกอย่างไร.**
 
 ```text
-/skill:sharpen write a script that finds duplicate invoices in the ledger export
+/skill:sharpen <prompt ที่กำลังจะส่ง>
 ```
 
-**ขั้นตอน.** `SKILL.md` เป็นย่อหน้าเดียว ก่อนเริ่มให้ถามว่าผู้เชี่ยวชาญจะทำอย่างไร (แหล่งดิบ วิธีจริง และการตรวจจากภายนอกว่าผลถูก)
-ผู้ใช้ต้องการอะไรจริง และงานระบุเกินหรือขาด ผ่อนข้อจำกัดที่ไม่รับใช้เป้าหมายเท่าที่เพิ่มข้อที่รับใช้ ปล่อยการเลือกที่เป็นของผู้ใช้ไว้เปิด
-เติมเฉพาะสิ่งที่ทำให้งานดีขึ้น ไม่ใช่ใหญ่ขึ้น คงการตรวจจากภายนอกหนึ่งอย่างเสมอ ไม่เล่ากรอบความคิดออกมา แล้วทำงาน
+**ขั้นตอน.**
+
+1. บอกว่ามืออาชีพระดับสูงในสาขานี้จะทำอะไรที่ผู้ใช้ไม่ได้ขอ
+2. บอกวัตถุดิบที่ดิบที่สุดที่เขาจะเริ่มจาก แทนสิ่งที่ถูกย่อยมาแล้ว
+3. บอกวิธีและเครื่องมือที่เขาจะใช้
+4. บอกสิ่งที่ไม่ใช่ agent หรือผู้ใช้ ที่จะแสดงว่าผลถูก
+5. เขียน prompt ใหม่ให้ขอสิ่งเหล่านั้น การเลือกที่เป็นของผู้ใช้ปล่อยไว้เปิด
 
 **Spawn.** ไม่ spawn
 
-**ผลลัพธ์.** ตัวงานเอง ไม่มีรายงานกรอบความคิด
+**ผลลัพธ์.** คำตอบสี่ข้อ และ prompt ที่เขียนใหม่ ยังไม่ทำงาน
 
 **ไฟล์ reference.** ไม่มี
 
@@ -1139,6 +1170,9 @@ test ตรวจกรณีที่มีคนคิดจะเขียน
 4. พิสูจน์ก่อนส่งมอบ ทำตาม skill ที่สร้างหนึ่งครั้งบนการเปลี่ยนชั่วคราวที่ทำให้คุณสมบัติพังในโค้ดจริง ต้องจับได้ แล้วทิ้งการเปลี่ยนนั้นและยืนยันว่ากลับสู่สถานะเดิม
 5. ส่งมอบ บอกผู้ใช้ว่าตรวจอะไร ใช้เครื่องมือไหนและทำไม ขอบเขต สิ่งที่พบ วิธีรัน และสิ่งที่ไม่ครอบคลุม แล้วชี้ไป `/skill:maintain-formal-verification-skill`
 
+ถ้าการตรวจเป็น model TLA+ skill ที่สร้างต้องบอก agent ถัดไปให้อ่านผลทุกครั้งด้วย [`statechart`](#statechart) ซึ่งเล่า invariant ที่พัง
+เป็นเส้นทางสั้นสุดด้วยคำธรรมดา อ้างถึงด้วยชื่อเท่านั้น ห้ามคัดลอกคำสั่งหรือ path ของมันลงใน skill ที่สร้าง
+
 เมื่อโค้ดปัจจุบันทำลายคุณสมบัติ ต้องรายงานเป็นข้อค้นพบพร้อม counterexample ห้ามผ่อนคุณสมบัติหรือ model จนผ่าน และห้ามแก้โค้ดผลิตภัณฑ์เว้นแต่ผู้ใช้ขอ
 
 **Spawn.** ไม่ spawn
@@ -1194,6 +1228,38 @@ flowchart TD
 **ไฟล์ reference.** ไม่มี
 
 ---
+
+### [`statechart`](../../skills/statechart/SKILL.md)
+
+**ใช้ทำอะไร.** วาดการเปลี่ยนสถานะของระบบ เช่น flow ของผลิตภัณฑ์ protocol หรือ service เป็น Mermaid statechart จาก model TLA+
+บั๊กแต่ละตัวเป็นเส้นทางมีเลขกำกับไปยังสถานะที่ผิดกฎ ป้ายทุกอันใช้คำของคนอ่าน chart เช่น PM วิศวกร หรือ reviewer ไม่ใช้ชื่อตัวแปร
+
+**ใช้เมื่อ.** อยากให้ PM หรือ designer เห็นบั๊กเป็นเส้นทางผ่านสถานะ อยากเปลี่ยน chart ที่ตกลงกันแล้วเป็นโครง TLA+ หรืออยากตรวจโค้ดเทียบกับ spec TLA+ ที่มีอยู่
+
+**ไม่ใช้เมื่อ.** ยังไม่มี formal verification และอยากสร้าง skill ตรวจคุณสมบัติ ให้ใช้ [`create-formal-verification-skill`](#create-formal-verification-skill)
+
+**เรียกอย่างไร.**
+
+```text
+/skill:statechart chart Pay.tla for a PM. show the double charge as a numbered path.
+```
+
+**ขั้นตอน.** เริ่มจาก `node "$(realpath skill://statechart)/scripts/statechart.mjs" --help` แล้วทำงานในโฟลเดอร์ทดลองนอก repo
+
+1. เลือกทิศ ใช้ `from-spec` เมื่อมี model TLA+ หรือโค้ดชัดพอจะ model ใช้ `from-chart` เมื่อยังไม่มี model และเจ้าของพฤติกรรมต้องตกลงกันก่อน
+2. Spec เป็น chart เลือกสถานะของ chart เขียนกฎที่คนอ่านยอมรับเป็น invariant ทีละข้อ รัน `from-spec` แล้วเติมป้ายในไฟล์ mapping
+   ถ้ามีวิธีแก้ ให้ model แล้วส่งเป็น `--fixed` render ด้วย `--png` และดูทุกภาพ เมื่อ model อธิบายโค้ด ต้อง replay เรื่องของบั๊กกับโค้ดจริง
+3. Chart เป็น spec วาด chart ที่ตกลงกัน ใส่ `%% never` หนึ่งบรรทัดต่อกฎ รัน `from-chart` ถ้ากฎพังแปลว่า design มีบั๊ก
+4. ส่งมอบ PNG และ Mermaid ของแต่ละ chart พร้อมหนึ่งบรรทัดต่อบั๊ก ตัวเลขทุกตัวมาจาก `summary.json` แนบ `stories.md` และคำสั่งที่สร้างทุกอย่างใหม่
+
+ครั้งแรกที่รัน script จะติดตั้ง TLC และ Java ด้วย mise ราว 305 MB ถ้ามีอยู่แล้วให้ตั้ง `TLA2TOOLS` เป็น path ของ `tla2tools.jar`
+และ `JAVA` เป็น path ของ java หรือให้ java อยู่บน `PATH`
+
+**Spawn.** ไม่ spawn
+
+**ผลลัพธ์.** โฟลเดอร์ `<Spec>-statechart/` ที่มี `chart.png`, `bug-<n>.png`, ไฟล์ `.mmd`, `stories.md`, `summary.json` และผลของ TLC
+
+**ไฟล์ reference.** `scripts/` ของ skill นี้ (`statechart.mjs` เป็นทางเข้า ส่วน `test/` เป็นเทสต์ของ upstream)
 
 ## Review
 
@@ -1379,7 +1445,7 @@ principle คือ skill ที่มีกฎข้อเดียว `poteto-
 
 ---
 
-## ดัชนี skill ทั้ง 59 ตัว
+## ดัชนี skill ทั้ง 61 ตัว
 
 คอลัมน์ Spawn บอกว่า `SKILL.md` ให้ spawn subagent ผ่าน `task` หรือไม่ "ใช่" แปลว่ามีเส้นทางที่ spawn และเงื่อนไขอยู่ในหัวข้อของ skill นั้น
 
@@ -1395,13 +1461,14 @@ principle คือ skill ที่มีกฎข้อเดียว `poteto-
 | [`blast-radius`](../../skills/blast-radius/SKILL.md) | ทำความเข้าใจ | หาผลกระทบนอก diff และพิสูจน์ข้อเท็จจริงที่ทำให้ปลอดภัย | ไม่ (อาจเรียก `arena`) |
 | [`recall`](../../skills/recall/SKILL.md) | ทำความเข้าใจ | สร้างบริบทงานล่าสุดจากประวัติและบันทึกร่วม | ใช่ |
 | [`ketchup`](../../skills/ketchup/SKILL.md) | ทำความเข้าใจ | เล่าสิ่งที่เปลี่ยนใน chat และสิ่งที่รอผู้ใช้ตัดสินใจ | ไม่ |
+| [`ketchup-video`](../../skills/ketchup-video/SKILL.md) | ทำความเข้าใจ | เล่าเหมือน `ketchup` เป็นวิดีโอสไลด์ไม่มีเสียง | ไม่ |
 | [`in-your-own-words`](../../skills/in-your-own-words/SKILL.md) | ทำความเข้าใจ | เล่าเป้าหมายของผู้ใช้ด้วยคำของ agent | ไม่ |
 | [`teach`](../../skills/teach/SKILL.md) | ทำความเข้าใจ | อธิบายงานให้เข้าใจจริงจาก `how` และ `why` | ไม่ (ผ่าน `how` และ `why`) |
 | [`architect`](../../skills/architect/SKILL.md) | ออกแบบและสำรวจ | ร่างชนิดข้อมูลและโครงสร้างโมดูลก่อนโค้ด | ใช่ (gate 2 ผ่าน `arena`) |
 | [`arena`](../../skills/arena/SKILL.md) | ออกแบบและสำรวจ | ผู้ลงแข่งหลายตัว เลือกฐานแล้วต่อกิ่ง | ใช่ |
 | [`swarm`](../../skills/swarm/SKILL.md) | ออกแบบและสำรวจ | worker ขนาน N ตัวแล้วรายงานเดียว | ใช่ |
 | [`figure-it-out`](../../skills/figure-it-out/SKILL.md) | ออกแบบและสำรวจ | ออกแบบ playbook ที่ตรวจสอบย้อนหลังได้เมื่อไม่มีตัวที่ตรง | ไม่ (เมื่อหน่วยผ่าน gate จึง spawn) |
-| [`sharpen`](../../skills/sharpen/SKILL.md) | ออกแบบและสำรวจ | ลับงานก่อนเริ่ม | ไม่ |
+| [`sharpen`](../../skills/sharpen/SKILL.md) | ออกแบบและสำรวจ | เขียน prompt ใหม่ให้งานลึกขึ้น ไม่ลงมือทำ | ไม่ |
 | [`reflect`](../../skills/reflect/SKILL.md) | ออกแบบและสำรวจ | ขุดบทเรียนจาก transcript เป็นการแก้ skill | ใช่ |
 | [`tdd`](../../skills/tdd/SKILL.md) | ลงมือทำ | แก้บั๊กโดยเขียน failing test ก่อน | ไม่ |
 | [`correct`](../../skills/correct/SKILL.md) | ลงมือทำ | ทำให้ความผิดพลาดที่เกิดซ้ำเกิดไม่ได้ | ไม่ |
@@ -1416,6 +1483,7 @@ principle คือ skill ที่มีกฎข้อเดียว `poteto-
 | [`maintain-verification-skill`](../../skills/maintain-verification-skill/SKILL.md) | Verification | ดูแล verification skill และ feature map | ใช่ |
 | [`create-formal-verification-skill`](../../skills/create-formal-verification-skill/SKILL.md) | Verification | สร้าง skill ตรวจคุณสมบัติหนึ่งข้ออย่างเป็นทางการ | ไม่ |
 | [`maintain-formal-verification-skill`](../../skills/maintain-formal-verification-skill/SKILL.md) | Verification | ปรับ formal verification ให้ตรงกับโค้ดที่เปลี่ยน | ใช่ (เมื่อ diff ใหญ่) |
+| [`statechart`](../../skills/statechart/SKILL.md) | Verification | วาด model TLA+ เป็น statechart บั๊กเป็นเส้นทางมีเลข | ไม่ |
 | [`fable-deslop`](../../skills/fable-deslop/SKILL.md) | Review | ย่อ patch แบบลบก่อนด้วย Oracle lane | ไม่ (ใช้ Oracle ผ่าน `rpce-cli`) |
 | [`typescript-best-practices`](../../skills/typescript-best-practices/SKILL.md) | อื่น ๆ | กฎ TypeScript สำหรับไฟล์ `.ts` และ `.tsx` | ไม่ |
 | [`make-bot-ui`](../../skills/make-bot-ui/SKILL.md) | อื่น ๆ | หน้า UI ที่คลิกส่งถึง agent ผ่าน server ในเครื่อง | ไม่ |

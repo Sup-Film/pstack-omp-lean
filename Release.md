@@ -1,3 +1,50 @@
+# Release Notes – 0.3.0
+
+ซิงก์กับ pstack 0.15.32 (`cursor/plugins` ที่ `99b609a`) อัปเดตจากรุ่นก่อนด้วย:
+
+```bash
+omp plugin marketplace update pstack-omp-lean
+omp plugin upgrade pstack-omp-lean@pstack-omp-lean
+```
+
+แล้วเปิด OMP process ใหม่ หรือรัน `/reload-plugins`
+
+## พฤติกรรมที่เปลี่ยน
+
+- **`/skill:sharpen` คืน prompt ที่เขียนใหม่และไม่ทำงานแล้ว** ตอบสี่ข้อ คือมืออาชีพจะทำอะไรเพิ่ม วัตถุดิบดิบที่สุด วิธีและเครื่องมือ
+  และสิ่งภายนอกที่พิสูจน์ว่าผลถูก จากนั้นเขียน prompt ใหม่ การเลือกที่เป็นของผู้ใช้ปล่อยไว้เปิด รุ่นก่อนลับงานแล้วลงมือทำเลย
+- **`/skill:reflect` ไม่แก้ skill ใน `plugins/cache/`** ก่อนอนุมัติจะแสดงปลายทาง `.omp/skills/<skill>/` หรือ
+  `~/.omp/agent/skills/<skill>/` หลังอนุมัติจะ copy skill ไปที่นั่นแล้วแก้ copy และไม่เปิด PR หรือ push
+
+## Skill ใหม่
+
+- **`statechart`** วาดการเปลี่ยนสถานะของระบบเป็น Mermaid statechart จาก model TLA+ บั๊กแต่ละตัวเป็นเส้นทางมีเลขกำกับ
+  เปลี่ยน chart ที่ตกลงกันแล้วเป็นโครง TLA+ หรือตรวจโค้ดเทียบกับ spec ที่มี ครั้งแรกติดตั้ง TLC และ Java ด้วย mise ราว 305 MB
+  หรือตั้ง `TLA2TOOLS` และ `JAVA` ให้ใช้ตัวที่มีอยู่
+- **`ketchup-video`** สรุปงานแบบ `ketchup` เป็นวิดีโอสไลด์สั้นไม่มีเสียง แล้วลิงก์ path ของไฟล์วิดีโอในคำตอบ ต้องมีเครื่องมือ render
+  เช่น `ffmpeg`
+- **`create-formal-verification-skill`** บอก skill ที่สร้างให้อ่านผล TLA+ ด้วย `statechart`
+
+## แก้ไข
+
+- `check-plan.mjs` อ่าน inline code ที่ใช้ backtick หลายตัวถูกต้อง
+- `orch` เลือก PR ที่ยัง active ก่อนประวัติของ branch
+- `watch-pr` ไม่ sleep เกิน deadline และแยก head ที่มาจาก fork ได้ตอนหา stack
+
+## สำหรับผู้ดูแล
+
+- `UPSTREAM` บันทึก commit ของ upstream ที่ซิงก์ล่าสุด `scripts/sync-upstream.sh` ดึงช่วงถัดไปมาใส่ และลิสต์ hunk ที่ต้องพอร์ตเอง
+- ผลตรวจรายไฟล์ของรอบนี้อยู่ที่ `docs/upstream-audit/sync-0.15.32.md` ทุก hunk เป็นการแปลงให้เข้ากับ OMP หรือแก้ถ้อยคำ
+
+## การทดสอบ
+
+- validator 61 skill, 0 problems
+- WSL Ubuntu: `poteto-mode/scripts` 84/84, `apply-models` 9/9, `statechart` 147 pass, 0 fail, 3 skipped (ต้องใช้ font Type 1 หรือ TLC จาก mise)
+- รันจริงด้วย `omp -p` บน OMP 18.12.6 Windows: `statechart` วาดบั๊กตัดเงินซ้ำเป็นเส้นทางสองขั้นพร้อม PNG, `ketchup-video` render
+  mp4 15 วินาทีและลิงก์ในคำตอบ, `sharpen` คืน prompt ใหม่โดยไม่แตะไฟล์
+
+---
+
 # Release Notes – 0.2.0
 
 อัปเดตจาก 0.1.0 ด้วย:
