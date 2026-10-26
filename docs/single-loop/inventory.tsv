@@ -9,12 +9,12 @@ hillclimb parallel hypotheses	one subagent per hypothesis	as-tool	parallel	indep
 refactoring step 5	mechanical Bounded session	fold	-	fixed steps are a script: codemod or ast_edit run by the root
 opening-a-pr opener	mechanical subagent commits, pushes, opens PR	fold	-	fixed steps; the root already holds the frozen diff
 how simple path	one explainer subagent explores and explains	fold	-	the root reads and explains; the explainer re-read what the root then presents
-how complex path	2-4 scout explorers then a reviewer explainer	as-tool	context	explorers only when a slice reads far more than the root needs afterward; the root writes the explanation
+how complex path	2-4 scout explorers then a reviewer explainer	as-tool	context	explorers when the subsystem spans several directories or services, or a slice reads far more than the root needs afterward; scouts run on smol; the root writes the explanation
 why investigators	one per evidence category including source control	as-tool	parallel+context	independent sources, bulky raw reads; source control folds into the root's code-anchor step
 why synthesizer	reviewer subagent synthesizes	fold	-	the root holds the anchor and every report; a second handoff loses detail
 reflect lens reviewers	three lens subagents	as-tool	parallel	independent lenses over a bulky transcript
 reflect synthesizer	reviewer subagent synthesizes	as-tool	independence	the root is the author of the conversation under review; judging which criticisms of itself to accept is self-review
-architect Phase B	arena on every function-boundary change	as-tool	parallel	root sketches two shapes in its own loop; arena only for a one-way door or a contested shape
+architect Phase B	arena on every function-boundary change	as-tool	independence	restored to upstream: arena on every architect run; competing candidates and a cross-judge are gate 2, and the author's own two sketches share its first instinct
 arena runners and judge	N candidates plus a blind judge	as-tool	parallel	independent candidates and blackbox judging
 interrogate reviewers	one reviewer per seat	as-tool	parallel	blackbox adversarial review; root already does lead judgment
 swarm workers	N workers	as-tool	parallel	coverage, races, verification lanes; gated on independence

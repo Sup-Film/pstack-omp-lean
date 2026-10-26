@@ -3,7 +3,7 @@
 **You own the design and the code. Ground, design, build, verify.** The context you build grounding and designing the change is what writes it well, so you write it and its tests in the same loop. Independent review comes from reviewer children on the frozen diff (**Opening a PR**), not from handing the writing away.
 
 1. `how` over the affected subsystem.
-2. `architect` for the shape: two candidates in your own loop. Its Phase B says when to run arena instead.
+2. `architect` for parallel design exploration: arena runners and a cross-judge, then you implement against the synthesized sketch.
 3. Write the throughput checkpoint as four todo items. A dimension that genuinely does not apply (single file, no fan-out) keeps its item with `n/a: <reason>` rather than being dropped:
    - **Blocking first steps.** Gates run before fan-out.
    - **Independent workstreams.** Disjoint files, services, or layers parallelize. Shared writes serialize.

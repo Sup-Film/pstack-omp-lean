@@ -20,7 +20,7 @@ When the repository ships a code graph (for example `graphify query`), ask it fi
 
 Trace the subsystem yourself: entry points, the types that carry the data, the decision points, the boundaries to other subsystems. Write down open questions as you go and close them by reading code, not by guessing.
 
-Spawn explorers only under gate 1 of the spawn gate in `skill://poteto-mode` (Delegation): the subsystem is large enough that tracing a slice reads far more than the explanation needs, and the slices are independent. Then start 2 to 4 `scout` explorers in one `task` call, one per slice, each with `skill://how/references/explorer-prompt.md` and its angle filled in. Children are read-only, never call `task`, and never ask the user. Read each full result at `agent://<id>`, spot-check its load-bearing claims in the code, and keep exploring the joins between slices yourself.
+Spawn explorers under gate 1 of the spawn gate in `skill://poteto-mode` (Delegation). Gate 1 holds when the subsystem spans several directories or services, or when tracing a slice reads far more than the explanation needs and a narrower read cannot shrink it. Then start 2 to 4 `scout` explorers in one `task` call, one per independent slice, each with `skill://how/references/explorer-prompt.md` and its angle filled in. `scout` runs on the `smol` role, so breadth stays cheap. Children are read-only, never call `task`, and never ask the user. Read each full result at `agent://<id>`, spot-check its load-bearing claims in the code, and keep exploring the joins between slices yourself.
 
 ## 3. Explain
 

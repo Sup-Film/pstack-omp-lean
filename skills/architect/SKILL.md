@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Architect
 
-Sketch types, function signatures, class shapes, and module boundaries with `not implemented` bodies and pseudocode. Compare at least two candidate shapes, then fill in code against the chosen sketch.
+Sketch types, function signatures, class shapes, and module boundaries with `not implemented` bodies and pseudocode. Synthesize across multiple independent design candidates, then fill in code against the chosen sketch.
 
 ## Start
 
@@ -26,13 +26,17 @@ Skip Phase A only when the work is genuinely greenfield with no surrounding syst
 
 ## Phase B: Sketch
 
-Design it twice, in your own loop. Sketch at least two structurally distinct candidates before choosing, even when the first looks sufficient. This is the **exhaust-the-design-space** principle skill (`skill://principle-exhaust-the-design-space`) made concrete. Whole-shape alternatives, not point fixes inside one shape. Apply `skill://architect/references/sketch-discipline.md` to each.
+Run the **arena** skill (`skill://arena`) with the design-sketch task and the Phase A grounding artifacts. Pass `skill://architect/references/runner-prompt.md` as each runner's prompt. Competing design candidates are gate 2 (independence) of the spawn gate in `skill://poteto-mode`, Delegation, so this fan-out always passes it. Two sketches of your own do not replace it: they share your context and your first instinct, and accepting the agent's first design is the mistake this phase exists to prevent.
 
-Screen every candidate against `skill://architect/references/design-red-flags.md` before choosing. Assume the next contributor is an agent that sees only the files it opened, copies the nearest example, and takes the shortest path that compiles. Prefer the design where a change that looks right from one file is right for the whole repo.
+Keep arena's default seats, `task` and `reviewer`; the design specialization travels in `skill://architect/references/runner-prompt.md`, not in an agent name. Add `poteto-agent` as a third seat when the design space has more than two real contenders. Each seat is an agent whose model comes from `task.agentModelOverrides`, which `/skill:setup-pstack` (`skill://setup-pstack`) writes. Candidates are independent by construction, with separate sessions and separate output locations. They are model-independent only when the operator configured distinct overrides and the resolved-model metadata OMP returns confirms it.
 
-Compare viable candidates on interface depth. Prefer the design that hides more complexity behind a smaller, simpler public surface. A rich interface can keep call chains short by concentrating capability instead of scattering it across layers. Record the choice in the rationale's "Synthesis decision" section.
+Design it twice. Require at least two structurally distinct candidates before synthesis, even when the first looks sufficient. This is the **exhaust-the-design-space** principle skill (`skill://principle-exhaust-the-design-space`) made concrete. Whole-shape alternatives, not point fixes inside one shape.
 
-Fan out to the **arena** skill (`skill://arena`) instead only when independent contexts are worth their cost (gate 2 of the spawn gate in `skill://poteto-mode`, Delegation): the decision is a one-way door such as a public API, a persisted format, a data model, or a protocol; the user asked for a bakeoff; or your own candidates keep collapsing into one shape on a decision that is expensive to get wrong. Then run arena with the design-sketch task and the Phase A grounding artifacts, and pass `skill://architect/references/runner-prompt.md` as each runner's prompt. Keep arena's default seats, `task` and `reviewer`. Add `poteto-agent` as a third seat when the design space has more than two real contenders. Each seat's model comes from `task.agentModelOverrides`, which `/skill:setup-pstack` (`skill://setup-pstack`) writes. Candidates are model-independent only when the operator configured distinct overrides and the resolved-model metadata OMP returns confirms it. Arena returns one synthesized design package, and its synthesis decision fills the rationale's "Synthesis decision" section.
+Screen every candidate against `skill://architect/references/design-red-flags.md` before synthesis. Assume the next contributor is an agent that sees only the files it opened, copies the nearest example, and takes the shortest path that compiles. Prefer the design where a change that looks right from one file is right for the whole repo.
+
+Compare viable candidates on interface depth. Prefer the design that hides more complexity behind a smaller, simpler public surface. A rich interface can keep call chains short by concentrating capability instead of scattering it across layers.
+
+Arena returns one synthesized design package. Its synthesis decision fills the rationale's "Synthesis decision" section. You implement against it in Phase D, in your own loop.
 
 ## Phase C: Agree (opt-in)
 
@@ -68,7 +72,7 @@ When you scrap:
 1. Re-run the **how** skill over what's been built.
 2. Redesign as if the new constraints had been day-one assumptions, per redesign-from-first-principles.
 3. Subtract before adding, per the **subtract-before-you-add** principle skill (`skill://principle-subtract-before-you-add`). The new sketch should be smaller than the old one before it grows.
-4. Return to Phase B.
+4. Return to Phase B and re-run arena.
 
 ## Outputs
 

@@ -131,7 +131,7 @@ can generate one with `/skill:create-formal-verification-skill`." On no, move on
 | reviews, reflect judgment and divergent and synthesizer, historical session consults | `advisor`, through the `reviewer`, `comment-sicko`, and `seance` agents |
 | arena cross-judge pool, the second opinion | `judge`, through the `security-reviewer` agent |
 | parallel implementation units, hillclimb arms, swarm workers, arena runners, why investigators | `task`, through the `task` and `poteto-agent` agents |
-| how explorers for bulk reads, reflect tooling | `smol`, through the `scout` and `librarian` agents |
+| how explorers for multi-directory or bulk reads, reflect tooling | `smol`, through the `scout` and `librarian` agents |
 | mechanical sweeps split across disjoint files | `tiny`, through the `sonic` agent |
 | hardest tasks, multi-phase plans, reading screenshots | `slow`, `plan`, `vision`, consumed by OMP itself; no agent pstack spawns runs on them |
 

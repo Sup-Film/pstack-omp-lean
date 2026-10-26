@@ -127,8 +127,9 @@ work in the chat that runs `/skill:poteto-mode` and spawns a subagent only past 
 
 What changed for the user: feature, bug-fix, perf, hillclimb, and refactoring work is written by the root
 with its tests; `how` and `why` synthesize in the root; PR opening and watches run as commands, not
-subagents. Review panels (`interrogate`, `no-comments`, the trail review), `arena`, `swarm`, `eval`, the
-`why` investigators for non-git sources, and the program playbooks' parallel owners still spawn.
+subagents. Review panels (`interrogate`, `no-comments`, the trail review), `architect`'s arena on every
+design, `swarm`, `eval`, `how` explorers across directories or services, the `why` investigators for
+non-git sources, and the program playbooks' parallel owners still spawn.
 
 [`docs/single-loop/inventory.tsv`](docs/single-loop/inventory.tsv) lists every spawn site with its verdict
 and reason. [`docs/single-loop/decisions.tsv`](docs/single-loop/decisions.tsv) is the decision trail.
