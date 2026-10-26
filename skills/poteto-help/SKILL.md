@@ -63,12 +63,13 @@ The default answer is `/skill:poteto-mode`, which runs most of the others when i
 |---|---|
 | Do any non-trivial task with rigor | `/skill:poteto-mode` (`skill://poteto-mode`) |
 | Check that the agent understood their goal and the problem before it starts | `/skill:in-your-own-words` (`skill://in-your-own-words`) |
-| Aim a task higher before starting: more expert, more outcome-focused, not overspecified | `/skill:sharpen` (`skill://sharpen`) |
+| Get a prompt rewritten deeper, not bigger, before sending it: what a top professional would add, their raw material and methods, and an outside check. It returns the prompt and doesn't do the task | `/skill:sharpen` (`skill://sharpen`) |
 | Know how code works now, or where new code should live | `/skill:how` (`skill://how`) |
 | Know why code is shaped this way, or where a number came from | `/skill:why` (`skill://why`) |
 | Understand a change or subsystem, explained plainly | `/skill:teach` (`skill://teach`) |
 | Catch up on their own recent work on a topic | `/skill:recall` (`skill://recall`) |
 | Catch up on what changed in this chat since their last message, in plain words and small visuals, with every item waiting on them listed and decidable from the reply alone | `/skill:ketchup` (`skill://ketchup`) |
+| Catch up like `/skill:ketchup`, in a short silent video of slides, with the waiting calls as text under it | `/skill:ketchup-video` (`skill://ketchup-video`) |
 | Know what a small diff could break outside itself | `/skill:blast-radius` (`skill://blast-radius`) |
 | Settle types and module shape before code that crosses a function boundary | `/skill:architect` (`skill://architect`) |
 | Get several attempts at one brief, merged into the best one | `/skill:arena` (`skill://arena`) |
@@ -85,6 +86,7 @@ The default answer is `/skill:poteto-mode`, which runs most of the others when i
 | Bring a verification skill and its feature map back in line with the app | `/skill:maintain-verification-skill` (`skill://maintain-verification-skill`) |
 | Formally verify a race, invariant, or other property that tests rarely reach | `/skill:create-formal-verification-skill` (`skill://create-formal-verification-skill`) |
 | Bring a formal verification back in line after the code it covers changed, and learn whether a failure is drift or a bug | `/skill:maintain-formal-verification-skill` (`skill://maintain-formal-verification-skill`) |
+| Show a PM or designer what the user sees as a chart checked by a model, with each bug drawn as a numbered path, turn an agreed chart into a TLA+ skeleton, or audit the code against its TLA+ spec | `/skill:statechart` (`skill://statechart`) |
 | Vet a performance number before reporting or acting on it | `/skill:benchmark-checklist` (`skill://benchmark-checklist`) |
 | Run a large or cross-cutting change, or one to review after stepping away | `/skill:figure-it-out` (`skill://figure-it-out`) |
 | Keep a decision log during a run, and review it afterward | `/skill:show-me-your-work` (`skill://show-me-your-work`) |
