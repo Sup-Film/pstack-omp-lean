@@ -54,7 +54,7 @@ File each Backlog item to your team's devex or backlog tracker without waiting. 
 Follow each approved row's Routing exactly:
 
 - Trivial existing-skill edit (a one-line bullet, a tightened sentence, a stale fact corrected): the parent does it directly.
-- Substantive existing-skill edit (a new section, a new pattern table, more than ~10 lines): follow the authoring-a-skill playbook (`skill://poteto-mode/playbooks/authoring-a-skill.md`) and the skill rules in `omp://skills.md`, and run its draft / test / iterate loop.
+- Substantive existing-skill edit (a new section, a new pattern table, more than ~10 lines): follow the authoring-a-skill playbook (`skill://poteto-mode/playbooks/authoring-a-skill.md`) and the skill rules in `omp://skills.md`, including the playbook's validation step.
 - `tune description: <skill path>` (the skill exists but didn't trigger when it should have): follow the same playbook and tune the description against `omp://skills.md`, keeping the trigger phrases a user actually says.
 - `new skill via authoring-a-skill: <kebab-name>`: create it through the same playbook. Do not invent the shape ad hoc.
 

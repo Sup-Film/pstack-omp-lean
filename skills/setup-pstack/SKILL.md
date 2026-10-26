@@ -113,15 +113,17 @@ with `--role judge=<provider>/<model>`. Do not fake diversity by giving the same
 
 Check whether the project can drive the real app for proof: a `verify-*` skill, or an existing harness. If
 not, offer once: "want a project-local verification skill, so agents can drive the app the way a user does
-and prove changes work? I can generate one with `/skill:create-verification-skill`." On no, move on without
-pushing.
+and prove changes work? I can generate one with `/skill:create-verification-skill`." On yes, run the
+**create-verification-skill** skill (`skill://create-verification-skill`). On no, move on without pushing.
 
 ### 8. Offer a formal verification skill (optional)
 
 Check whether the project already has a formal verification skill: a project skill that runs a model
 checker, a prover, or another verifier against named code. If not, offer once: "want a formal verification
 skill, so agents can prove a key property holds in every case in scope, not only the cases tests reach? I
-can generate one with `/skill:create-formal-verification-skill`." On no, move on without pushing.
+can generate one with `/skill:create-formal-verification-skill`." On yes, run the
+**create-formal-verification-skill** skill (`skill://create-formal-verification-skill`). On no, move on
+without pushing.
 
 ## How roles carry pstack's work
 

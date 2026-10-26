@@ -232,7 +232,7 @@ The root resolves a child question and sends the answer with `write agent://<id>
 - A worker's report never verifies its own work.
 - Record branch, base SHA, and exact head SHA or artifact generation.
 - Prefer behavioral proof over type-check-only evidence.
-- A new commit, restack, conflict resolution, or applied patch creates a new generation that voids the prior verdict.
+- A new commit, restack, conflict resolution, or applied patch creates a new generation. The prior verdict carries to it only under the patch-id rule in `skill://poteto-mode/playbooks/shipping.md` step 3; otherwise the new generation needs a fresh verdict.
 - Judges and synthesizers advise. The root owns selection, user interaction, external writes, merges, deletion, and final truth.
 - Claim model independence only from returned resolved-model and fallback metadata.
 
