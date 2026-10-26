@@ -12,6 +12,6 @@ Be scientific. Every shipped line traces to runtime evidence. Belt-and-suspender
    This is the canonical **sequence-verifiable-units** principle skill, the failing test first and the fix on top.
 6. Run **Opening a PR**.
 
-Run `how` yourself. `why` runs its own investigators only for the evidence sources it cannot read cheaply in your loop.
+Run `how` yourself. Run `why` as written. Its Step 3 decides which evidence sources get an investigator.
 
 **Reply:** what was broken, root cause, fix, how you verified. Paste failing-then-passing repro output verbatim.

@@ -32,3 +32,10 @@ maintain-verification-skill source wave	one scout per feature file	keep	parallel
 maintain-formal-verification-skill	scouts per area on large diff	keep	context	already gated on a large diff
 One-shot watcher	scout task polls	fold	-	fixed steps: a background bash job runs the watch command and its result auto-delivers
 autopilot / orchestrate owners	one owner per PR or track	keep	parallel	independent PRs in separate worktrees
+visual-parity step 3	one owner per component, always	as-tool	independence	root migrates one component at a time; owners only when several independent components migrate at once
+interrogate lead judgment	root triages reviewer findings	keep	-	root stays the judge; when it wrote the diff it must fix each finding or disprove it with runnable evidence
+shipping per-PR verdict	independent reviewer per PR before landing	keep	independence	blackbox verification of a green stack
+recall session-history scouts	parallel scouts over session slices	keep	context	transcripts are bulk; already skipped for one or two sessions
+recall shared-record sweep	why investigators including source control	fold	-	root searches source control itself, matching why Step 2
+autopilot-full swarm verify	swarm at the code-ready head	keep	independence	verifiers never wrote the code
+orchestrate workers and verifiers	workers per unit, verifier per unit	keep	independence	program-scale parallel units in separate worktrees

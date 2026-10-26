@@ -136,9 +136,10 @@ can generate one with `/skill:create-formal-verification-skill`." On no, move on
 | hardest tasks, multi-phase plans, reading screenshots | `slow`, `plan`, `vision`, consumed by OMP itself; no agent pstack spawns runs on them |
 
 `poteto-mode` keeps most work in the root session, so the session's model carries feature, bug-fix,
-refactoring, perf, and investigation work. Pick that model for judgment. `slow`, `plan`, `vision`, and
-`designer` have no spawnable carrier. To put a parallel implementer on the strongest model, point
-`poteto-agent` at `slow`: `--agent poteto-agent=@slow`.
+refactoring, perf, and investigation work. This skill's budget sets only the spawned agents' roles; pick the
+root's model with `/model` or `modelRoles.default`. `slow`, `plan`, `vision`, and `designer` have no
+spawnable carrier. To put a parallel implementer on the strongest model, point `poteto-agent` at `slow`:
+`--agent poteto-agent=@slow`.
 
 Panel size is not a model list here. One `task` item is one panel member, so fan-out is how many items the
 batch carries, and independence comes from the items naming different agents.

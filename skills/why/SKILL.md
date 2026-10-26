@@ -14,7 +14,7 @@ Every spawn is an item in the `task` tool's batch shape. Investigators use `agen
 
 Each dispatch is one `task` call. `context` holds the question, the code anchor, and the rule that children are leaves who never call `task`. `tasks[]` holds one item per child with `name` (unique, CamelCase), `agent`, `task` (the filled prompt template), and `solutionSpace`. Read each full result at `agent://<id>`.
 
-Investigators need the source tools their category uses, such as MCP tools, a source skill, or `web_search` and `read`. Their briefs forbid writing anything except `local://` evidence files, so they stay read-only by instruction. If a child reports that a tool its source needs is missing from its session, rerun that category as `task` and record the substitution in Sources Consulted.
+Investigators need the source tools their category uses, such as MCP tools, a source skill, or `web_search` and `read`. Their briefs forbid writing anything except `local://` evidence files, so they stay read-only by instruction. If a child reports that a tool its source needs is missing from its session, read that source yourself when your session has the tool, and otherwise report it unavailable in Sources Consulted.
 
 ## Operating Posture
 

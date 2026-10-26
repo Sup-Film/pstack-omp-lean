@@ -24,7 +24,7 @@ Use these exact OMP agent names when a role runs as a child.
 | `mechanical` | `sonic` |
 | `watcher` | a background `bash` job; `scout` only when watching needs judgment |
 
-`planner` and `synthesizer` always run in the root and have no agent. Role responsibilities and the spawn gate live in `skill://poteto-mode`. This table only names the agent.
+`planner` and `synthesizer` run in the root and have no agent, except `reflect`'s synthesizer, which judges the root's own conversation and runs as `reviewer`. Role responsibilities and the spawn gate live in `skill://poteto-mode`. This table only names the agent.
 
 The canonical OMP roster is closed:
 
@@ -46,11 +46,11 @@ A canonically routed task item's `agent` value must be one of those bundled name
 
 ### Planning, design, and synthesis
 
-This OMP version has no bundled `plan` agent and no `designer` agent. Planning and synthesis stay in the root, which already holds the context they need. A `designer` child exists only as an arena candidate seat and uses `task`. The brief carries the specialization, such as visual and interaction design, and no source-host subagent fields.
+This OMP version has no bundled `plan` agent and no `designer` agent. Planning and synthesis stay in the root, which already holds the context they need, with the `reflect` exception above. A `designer` child exists only as an arena candidate seat and uses `task`. The brief carries the specialization, such as visual and interaction design, and no source-host subagent fields.
 
 ### Security review
 
-Use `security-reviewer` for an independent security lane. Keep it read-only and separate from ordinary code review when both are required. A later `reviewer` session may synthesize frozen reports; it does not replace the primary security review.
+Use `security-reviewer` for an independent security lane. Keep it read-only and separate from ordinary code review when both are required.
 
 ## Task contract
 
@@ -210,7 +210,7 @@ Do not mix implementers and reviewers in one session. Do not let reviewers race 
 A watch is fixed steps, so it runs as a tool, not a model loop.
 
 1. Run the watch command (for example `watch-pr` for a PR) as a background `bash` job with `async: true`, or `timeout: 0` when it may outlast the default deadline. Its result auto-delivers.
-2. Pin the exact branch, head SHA, or generation in the command's arguments.
+2. Record the head SHA or generation when you start the job, and read the current one (for a PR, `gh pr view <pr> --json headRefOid`) before you act on the result.
 3. Discard a result whose generation no longer matches.
 4. Start a fresh job for each new generation.
 5. Stop the job with `write proc://<id>/kill` when the stop predicate is met or the work is superseded.
@@ -226,7 +226,7 @@ The root resolves a child question and sends the answer with `write agent://<id>
 ## Ownership and verification
 
 - One writer per branch, worktree, mutable state, and output path.
-- The author of a change never reviews or judges it. The root owns synthesis.
+- The author of a change never reviews it. When the root triages reviews of a diff it wrote, it fixes each finding or disproves it with runnable evidence, per `interrogate` Step 5.
 - A task stays inside its assigned unit and role.
 - Isolate concurrent writers unless their outputs are structurally disjoint.
 - A worker's report never verifies its own work.

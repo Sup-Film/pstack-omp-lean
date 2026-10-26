@@ -50,6 +50,8 @@ You are the lead reviewer, a pragmatic senior engineer, not a neutral aggregator
 - **Noted**. Technically valid but not actionable. Context-dependent, premature optimization, or low-impact at this stage.
 - **Dismissed**. Wrong, nitpicky, or missing context, with a brief reason.
 
+When you wrote the code under review, you may not close a finding on judgment alone. Each Act on or Consider finding is fixed, or disproved with runnable evidence: a test or repro output, or the `file:line` that shows the claim is false. Knowing a constraint the reviewer did not is not a disproof until you show where the code enforces it. A finding you cannot disprove that way is Act on.
+
 ## Output Format
 
 ### Intent
