@@ -25,7 +25,7 @@ Watch for findings that reveal the reviewer didn't understand the context:
 - Flagging patterns that are consistent with the rest of the codebase (the reviewer just doesn't know that)
 - Recommending approaches that conflict with constraints you know about
 
-These are honest mistakes from reviewers working with limited information. Dismiss them gracefully.
+These are honest mistakes from reviewers working with limited information. Dismiss them gracefully. When you wrote the code under review, a constraint you know about counts only once you show where the code or a test enforces it, per Step 5's author rule in `skill://interrogate`.
 
 ## When Reviewers Are Right
 

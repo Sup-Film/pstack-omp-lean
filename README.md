@@ -122,7 +122,8 @@ work in the chat that runs `/skill:poteto-mode` and spawns a subagent only past 
 1. **Context.** The child reads far more than the root needs afterward, and a narrower read cannot shrink it.
 2. **Independence.** The work needs a fresh context: review, verification, judging, competing candidates, or
    parallel units with disjoint writes.
-3. **Conflict.** The work needs a stance or toolset that conflicts with the root's.
+3. **Conflict.** The work needs a toolset or instructions that conflict with the root's and that a skill
+   cannot reconcile. A persona alone does not qualify.
 
 What changed for the user: feature, bug-fix, perf, hillclimb, and refactoring work is written by the root
 with its tests; `how` and `why` synthesize in the root; PR opening and watches run as commands, not

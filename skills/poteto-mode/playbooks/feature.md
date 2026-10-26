@@ -18,4 +18,4 @@
 
 Code-coupled work (one feature, one migration) stays in one loop with the checkpoint inline. Parallel children are for slices that produce independent artifacts (separate components behind a settled interface, audits, cross-subsystem investigations, competing experiments). Rewrite the checkpoint at phase boundaries.
 
-**Reply:** what you built, what you chose and why, the throughput checkpoint, open decisions. Tables for design alternatives.
+**Reply:** what you built, what you chose and why, the throughput checkpoint, open decisions, and the verification run with its output verbatim. Tables for design alternatives.

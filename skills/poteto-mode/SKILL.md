@@ -96,9 +96,9 @@ Read the leaf skill in full for any principle you apply. Each entry names when i
 
 1. **Context.** The child reads far more than you need afterward: long transcripts, raw traces, logs, a sweep across many sources. Tens of thousands of tokens qualify. A few thousand do not. Try a narrower read first (grep, a line range, a sqlite or `?q=` query, a script that prints only the answer), and spawn only if the bulk survives it.
 2. **Independence.** The work needs a fresh context that must not see yours: blackbox review or verification, adversarial panels, blinded judges, competing design candidates, eval candidates. Or it splits into parallel units with disjoint writes and clean interfaces, each in its own worktree, where the breadth is worth the tokens.
-3. **Conflict.** The work needs a stance, toolset, or instructions that conflict with yours, such as a comment audit of your own diff or a security lane.
+3. **Conflict.** The work needs a toolset or instructions that conflict with yours and that a skill cannot reconcile, such as an audit that must assume your diff is guilty. A persona or voice alone does not qualify.
 
-These never earn a spawn: a different role name (planner, implementer, tester, synthesizer), a long skill or prompt, many steps, fixed steps (write a script or codemod instead), or a summary of work you will act on next. Split by context, never by kind of work. Whoever grounds and designs a change writes it and its tests. Whoever gathers the evidence writes the conclusion.
+These never earn a spawn: a different role name (planner, implementer, tester, synthesizer), a persona, a long skill or prompt, many steps, fixed steps (write a script or codemod instead), or a summary of work you will act on next. Split by context, never by kind of work. Whoever grounds and designs a change writes it and its tests. Whoever gathers the evidence writes the conclusion.
 
 Who runs each role:
 
