@@ -10,7 +10,7 @@
     {
       "name": "pstack-omp-lean",
       "description": "poteto's pstack skill catalog for OMP with a single-loop spawn gate. Start with /skill:poteto-mode.",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "source": "./",
       "author": {
         "name": "Sup-Film"
