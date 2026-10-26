@@ -12,6 +12,10 @@ repo นี้ต่อยอดจาก [`dsebban/skills`](https://github.com/
 และ [คู่มือ pstack](https://x.com/poteto/status/2097732320606507506) ของ poteto เอง สรุปภาษาไทยของคู่มืออยู่ที่
 [`docs/pstack-guide-notes.th.md`](docs/pstack-guide-notes.th.md)
 
+เอกสารภาษาไทยฉบับเต็มอยู่ใน [`docs/th/`](docs/th/README.md) ได้แก่ กระบวนการทำงานทั้งหมด
+([`workflow.th.md`](docs/th/workflow.th.md)), ขั้นตอนของทั้ง 23 playbook ([`playbooks.th.md`](docs/th/playbooks.th.md))
+และคำอธิบายทั้ง 59 skill ([`skills.th.md`](docs/th/skills.th.md))
+
 ## ติดตั้ง
 
 ใน OMP session:

@@ -11,7 +11,8 @@ every Cursor mechanism to OMP: `task` batches, role-based model routing, `skill:
 Anthropic's [When to fold subagents into your main agent loop](https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop)
 and poteto's own [pstack guide](https://x.com/poteto/status/2097732320606507506). A Thai summary of that
 guide, written in our own words and compared against this repository, is in
-[`docs/pstack-guide-notes.th.md`](docs/pstack-guide-notes.th.md).
+[`docs/pstack-guide-notes.th.md`](docs/pstack-guide-notes.th.md). Full Thai documentation of the workflow,
+all 23 playbooks, and all 59 skills is in [`docs/th/`](docs/th/README.md).
 
 ## Install
 
