@@ -1,69 +1,76 @@
-# OMP skills
+# pstack-omp-lean
 
-An OMP port of the [pstack](https://github.com/cursor/plugins/tree/main/pstack) skill catalog, plus the
-OMP-native adapters that make it run on [`omp`](https://omp.sh/).
+Lauren Tan's [pstack](https://github.com/cursor/plugins/tree/main/pstack) skill catalog for
+[OMP](https://omp.sh/), installable as an OMP plugin and tuned to run most work in one agent loop.
 
-Upstream pstack targets Cursor. This repository tracks it and rewrites every host mechanism for OMP:
-`task` batches instead of Cursor `Task` calls, agents instead of per-call model slugs, `skill://` instead of
-relative paths, `agent://` and `history://` instead of cloud-agent URLs.
-
-This fork tunes the catalog toward one agent loop, per Anthropic's
-[When to fold subagents into your main agent loop](https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop).
-See [Single-loop tuning](#single-loop-tuning).
-
-## Catalog
-
-| Group | Skills |
-|---|---|
-| Router | `poteto-mode` routes substantial work to the matching playbook. Start here. |
-| OMP adapters | `pstack-omp` maps canonical pstack roles and lifecycle protocols to OMP task agents. `orchestrate-omp` coordinates subagents on program-scale work. `setup-pstack` configures which model each role and agent runs on. |
-| Understanding | `how`, `why`, `interrogate`, `blast-radius`, `recall`, `ketchup`, `in-your-own-words`, `teach` |
-| Design and exploration | `architect`, `arena`, `swarm`, `figure-it-out`, `sharpen`, `reflect` |
-| Execution | `tdd`, `correct`, `bro`, `show-me-your-work`, `benchmark-checklist`, `automate-me` |
-| Writing | `unslop`, `technical-writing`, `no-comments` |
-| Verification | `create-verification-skill`, `maintain-verification-skill`, `create-formal-verification-skill`, `maintain-formal-verification-skill` |
-| Review | `fable-deslop` shrinks an oversized patch with the RepoPrompt CE context builder and its Oracle lanes |
-| Language | `typescript-best-practices` |
-| Bots | `make-bot-ui` |
-| Help | `poteto-help` |
-| Principles | 24 `principle-*` leaves cited by the playbooks |
-
-`agents/` holds two optional subagent definitions, `poteto-agent` and `comment-sicko`, for imported
-workflows that call those names directly.
-
-## Requirements
-
-- OMP 18.10.4 or newer.
-- Bun, for the `poteto-mode` scripts.
-- `gh`, for the PR playbooks.
-- RepoPrompt CE and its `rpce-cli`, for `fable-deslop`.
-- `trash`, for the worktree-cleanup playbook.
+It builds on [`dsebban/skills`](https://github.com/dsebban/skills), the OMP port of pstack. That port maps
+every Cursor mechanism to OMP: `task` batches, role-based model routing, `skill://`, `agent://`, and
+`history://`. This repository keeps the port and changes when the catalog spawns subagents. It follows
+Anthropic's [When to fold subagents into your main agent loop](https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop)
+and poteto's own [pstack guide](https://x.com/poteto/status/2097732320606507506).
 
 ## Install
 
-Clone the repository and point OMP at its `skills/` directory:
+From any OMP session:
+
+```text
+/marketplace add Sup-Film/pstack-omp-lean
+/marketplace install pstack-omp-lean@pstack-omp-lean
+/reload-plugins
+```
+
+Or from a shell:
 
 ```bash
-git clone https://github.com/dsebban/skills.git ~/dev/skills
+omp plugin marketplace add Sup-Film/pstack-omp-lean
+omp plugin install pstack-omp-lean@pstack-omp-lean
+```
+
+The plugin brings the 59 skills under `skills/` and the two subagents under `agents/` (`poteto-agent` and
+`comment-sicko`). Add `--scope project` to install for one repository only.
+
+### Coming from another pstack install
+
+Two leftovers from a manual install shadow the plugin:
+
+1. A `skills.customDirectories` entry in `~/.omp/agent/config.yml` that points at another pstack checkout
+   provides skills with the same names. Remove it.
+2. `poteto-agent.md` and `comment-sicko.md` in `~/.omp/agent/agents/` take precedence over the plugin's
+   agents. User agents load before plugin agents. Delete or move both files.
+
+Start a new OMP process afterwards.
+
+### Update and remove
+
+```bash
+omp plugin marketplace update pstack-omp-lean
+omp plugin upgrade pstack-omp-lean@pstack-omp-lean
+omp plugin uninstall pstack-omp-lean@pstack-omp-lean
+```
+
+### Manual install
+
+To track a checkout instead of the plugin cache:
+
+```bash
+git clone https://github.com/Sup-Film/pstack-omp-lean.git ~/dev/pstack-omp-lean
+mkdir -p ~/.omp/agent/agents && cp ~/dev/pstack-omp-lean/agents/*.md ~/.omp/agent/agents/
 ```
 
 ```yaml
 # ~/.omp/agent/config.yml
 skills:
   customDirectories:
-    - ~/dev/skills/skills
+    - ~/dev/pstack-omp-lean/skills
 ```
 
-The clone stays live, so `git pull` updates every skill at once.
+## Requirements
 
-Install the optional agents by copying them into OMP's user agent directory:
-
-```bash
-mkdir -p ~/.omp/agent/agents
-cp ~/dev/skills/agents/*.md ~/.omp/agent/agents/
-```
-
-Start a new OMP process after either change. Existing sessions keep their previous inventory.
+- OMP 18.10.4 or newer. Verified on 18.12.6.
+- Bun, for the `poteto-mode` scripts.
+- `gh`, for the PR playbooks.
+- RepoPrompt CE and its `rpce-cli`, for `fable-deslop`.
+- `trash`, for the worktree-cleanup playbook.
 
 ## Configure models
 
@@ -73,77 +80,112 @@ OMP routes models by role, not per call. Run this once:
 /skill:setup-pstack
 ```
 
-It detects the available catalog, asks for a reasoning budget, and writes `modelRoles` and
-`task.agentModelOverrides` into the active profile's `config.yml` after validating every selector. It also
-reports when two panel agents resolve to the same model, which is the difference between a second opinion
-and self-review.
+It asks for a reasoning budget and writes `modelRoles` and `task.agentModelOverrides` after validating
+every selector. That budget sets the spawned agents only. The root session, which now does most of the
+work, runs on the model you pick with `/model` or `modelRoles.default`.
+
+Reviewers, arena runners, and judges disagree usefully only when they run on different model families.
+`setup-pstack` reports when two panel agents resolve to the same model.
 
 ## Use
 
-Start with `/skill:poteto-mode` and describe the work; it routes to the matching playbook and pulls in the
-skills that playbook needs. Every skill is also directly invocable as `/skill:<name>`.
-
-Upstream marks the catalog `disable-model-invocation: true`, and this port keeps that. The model does not
-pick these skills up on its own; the user invokes them, or `poteto-mode` routes to them. Three skills are
-the exceptions and load when the work calls for them: the OMP adapters `pstack-omp` and `orchestrate-omp`,
-and `setup-pstack`, whose trigger phrases are about configuring models.
-
-Reference files resolve through the owning skill:
+Start with `/skill:poteto-mode` and describe the work. It routes to the matching playbook (feature, bug
+fix, perf, refactoring, investigation, prototype, multi-phase plan, and others) and pulls in the skills
+that playbook needs. Every skill is also invocable directly as `/skill:<name>`.
 
 ```text
-skill://poteto-mode
-skill://poteto-mode/playbooks/babysit.md
-skill://why/references/epistemics.md
+/skill:poteto-mode fix this bug report: <paste>. Reproduce it first and show me the failing and passing runs.
+/skill:poteto-mode build <feature>. Architect it first.
+/skill:how how does <subsystem> work?
+/skill:why why does <code> do it this way?
 ```
 
-OMP resolves skill names exactly and case-sensitively, and `skill://` paths are readable but not executable.
-A step that runs a bundled script resolves its real path first with `realpath skill://<name>`, which prints
-the physical directory under any install root.
+The catalog keeps upstream's `disable-model-invocation: true`, so the model loads these skills only when
+you invoke them or `poteto-mode` routes to them. `pstack-omp`, `orchestrate-omp`, and `setup-pstack` are
+the exceptions. `/skill:poteto-help` explains the catalog.
 
-`/skill:poteto-help` explains the catalog, including which upstream surfaces have no OMP equivalent.
+| Group | Skills |
+|---|---|
+| Router | `poteto-mode` |
+| OMP adapters | `pstack-omp`, `orchestrate-omp`, `setup-pstack` |
+| Understanding | `how`, `why`, `interrogate`, `blast-radius`, `recall`, `ketchup`, `in-your-own-words`, `teach` |
+| Design and exploration | `architect`, `arena`, `swarm`, `figure-it-out`, `sharpen`, `reflect` |
+| Execution | `tdd`, `correct`, `bro`, `show-me-your-work`, `benchmark-checklist`, `automate-me` |
+| Writing | `unslop`, `technical-writing`, `no-comments` |
+| Verification | `create-verification-skill`, `maintain-verification-skill`, `create-formal-verification-skill`, `maintain-formal-verification-skill` |
+| Review | `fable-deslop` |
+| Other | `typescript-best-practices`, `make-bot-ui`, `poteto-help`, and 24 `principle-*` leaves |
 
-## OMP task behavior
+## What changed from upstream
 
-- Use the exact agent names in the live `task` inventory. Omit `agent` to select OMP's default worker.
-- Use `tasks[]`, `context`, `effort`, and `isolated` only when the live task schema exposes them.
-- Never put a model in a task item. Model choice is `modelRoles` and `task.agentModelOverrides`.
-- Treat child sessions as fresh context. Put the goal, constraints, ownership, acceptance criteria, and the
-  leaf-agent boundary in every assignment.
-- Read complete results from `agent://<id>` and transcripts from `history://<id>`.
-- Keep user interaction, approvals, integration, and final verification with the root coordinator.
+Upstream delegates by role. Explorers read, a planner plans, an implementer writes, and a synthesizer
+summarizes. Each handoff drops context and multiplies tokens. Here the chat that runs `poteto-mode` does
+that work itself, and spawns a subagent only past one gate, defined in `poteto-mode`'s Delegation section:
 
-## Single-loop tuning
+1. **Context.** The child reads far more than the root needs afterward, and a narrower read cannot
+   shrink it.
+2. **Independence.** The work needs a fresh context: review, verification, judging, competing design
+   candidates, or parallel units with disjoint writes.
+3. **Conflict.** The work needs tools or instructions that conflict with the root's and that a skill
+   cannot reconcile.
 
-Upstream pstack delegates by role: explorers read, a planner plans, an implementer writes, a synthesizer
-summarizes. Each handoff drops context, adds a nested model loop, and multiplies tokens. This fork keeps that
-work in the chat that runs `/skill:poteto-mode` and spawns a subagent only past one gate, defined once in
-`poteto-mode`'s Delegation section:
+| Work | Upstream | Here |
+|---|---|---|
+| Feature, bug fix, perf, refactoring code | implementer subagent | the root writes the code and its tests |
+| `how` | explainer subagent, explorers for complex scope | the root explains; `scout` explorers when the answer crosses 3+ directories or 2+ services |
+| `why` | git investigator and synthesizer subagents | the root reads git and synthesizes; investigators only for non-git sources |
+| `architect` | arena with runners and a cross-judge | unchanged |
+| PR opening, CI watching | subagents | a command and a background shell job |
+| `interrogate`, `no-comments`, `swarm`, `eval`, `reflect` | subagents | unchanged |
 
-1. **Context.** The child reads far more than the root needs afterward, and a narrower read cannot shrink it.
-2. **Independence.** The work needs a fresh context: review, verification, judging, competing candidates, or
-   parallel units with disjoint writes.
-3. **Conflict.** The work needs a toolset or instructions that conflict with the root's and that a skill
-   cannot reconcile. A persona alone does not qualify.
+Since the root now reviews its own code's reviews, `interrogate` adds an author rule. Each finding gets a
+fix, or a disproof with runnable evidence.
 
-What changed for the user: feature, bug-fix, perf, hillclimb, and refactoring work is written by the root
-with its tests; `how` and `why` synthesize in the root; PR opening and watches run as commands, not
-subagents. Review panels (`interrogate`, `no-comments`, the trail review), `architect`'s arena on every
-design, `swarm`, `eval`, `how` explorers across directories or services, the `why` investigators for
-non-git sources, and the program playbooks' parallel owners still spawn.
+Spawned agents return one report shape: a verdict (`PASS`, `ISSUES`, or `BLOCKED`), the conclusion, and
+evidence as `file:line` or a command with its result. Verifiers may not pass a partial run.
 
-[`docs/single-loop/inventory.tsv`](docs/single-loop/inventory.tsv) lists every spawn site with its verdict
-and reason. [`docs/single-loop/decisions.tsv`](docs/single-loop/decisions.tsv) is the decision trail.
+[`docs/single-loop/inventory.tsv`](docs/single-loop/inventory.tsv) lists all 40 spawn sites with their
+verdict and reason. [`docs/single-loop/decisions.tsv`](docs/single-loop/decisions.tsv) records each
+decision with its evidence.
+
+## Testing
+
+```bash
+node scripts/validate-skills.mjs                                      # frontmatter and every skill:// link
+cd skills/poteto-mode/scripts && bun install && bun test              # 70 tests
+cd skills/setup-pstack/scripts && node --test apply-models.test.mjs   # 9 tests
+```
+
+Run the script tests on Linux, macOS, or WSL. On native Windows, upstream included, 7 bun tests fail
+because their fake `gh` and `origin` binaries are bash scripts on a `:`-separated `PATH`, and 6
+`apply-models` tests fail for a cause not yet traced. All of them pass on WSL Ubuntu.
+
+Results for this release, measured on OMP 18.12.6:
+
+- Validator: 59 skills, 0 problems. Script tests: 70/70 and 9/9 on WSL Ubuntu, the same as upstream.
+- Behavior runs with `omp -p`, one run each. Cost counts the root session only.
+
+| Scenario | Subagents spawned | Result | Wall time | Root cost |
+|---|---|---|---|---|
+| Bug fix | 0 | failing test before the fix, 3/3 after | 57 s | $0.36 |
+| Feature with architect | 2 arena candidates, 1 judge, 1 reviewer | root wrote the code, reviewer found an overflow, 10/10 tests | 17 min | $1.31 |
+| `why` on git history | 0 | cited the commit and incident | 65 s | $0.37 |
+| `how` on a 4-file repo | 0 | traced handler to store | 52 s | $0.26 |
+| `how` across a large service | 2 scouts | traced route to Usage Record | 330 s | $0.84 |
+| `interrogate` on own diff | 2 reviewers | fixed one finding test-first, disproved one claim by rerun | 294 s | $0.91 |
+
+Not yet exercised: playbooks that need a git remote, such as opening a PR, CI watching, and autopilot.
 
 ## Provenance
 
 - The catalog is adapted from Lauren Tan's [`pstack`](https://github.com/cursor/plugins/tree/main/pstack),
   version 0.15.28 (`cursor/plugins` at `d457567`).
+- The OMP port, `pstack-omp`, `fable-deslop`, and `setup-pstack`'s model helper come from
+  [`dsebban/skills`](https://github.com/dsebban/skills) at `12c3f3f`.
 - `orchestrate-omp` began as Eric Provencher's
-  [`orchestrate`](https://github.com/provencher/codex-skills/tree/main/orchestrate) and is now OMP-native.
-- `pstack-omp`, `fable-deslop`, and the OMP integration, including `setup-pstack`'s model helper, are
-  maintained here.
+  [`orchestrate`](https://github.com/provencher/codex-skills/tree/main/orchestrate).
 
-See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) for upstream copyright notices.
+See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) for the upstream copyright notices.
 
 ## License
 
