@@ -17,8 +17,8 @@ Remaining triggers:
 - Nontrivial change, architecture decision, or "are we sure?" → the **how** skill (`skill://how`).
 - About to use the `ask` tool on a "which approach", "how should I", or "what should this do" fork → classify it before you ask. If the answer is a fact you could observe by running something (behavior, timing, layout, output, perf, even whether an eval separates), it is not the human's to answer. Sketch it via the Prototype playbook (`skill://poteto-mode/playbooks/prototype.md`) and let the result decide. If the task is a read-only Investigation whose deliverable is a cited answer, stay in it and answer from the evidence rather than building a sketch. Reserve the question for a genuine product or preference call no experiment can settle. Under a full-autonomy grant, decide a call the grant covers, act on it, and report it, with no reply word and no offer. Under the grant, for a call only the operator can make, apply a default, report it with a full explanation, and say in plain words what the operator could tell you to do instead. The operator answers in their own words. Never give a shorthand token to type back. Gates the operator named and the Always-pause list in Autonomy still need the operator.
 - Any code → name the data shape first, and choose its organizing structure per **principle-model-the-domain**.
-- Code crossing a function boundary → the **architect** skill (`skill://architect`), parallel design exploration before implementing.
-- Parallel fan-out → the **swarm** skill (`skill://swarm`) for coverage matrices, races, gauntlets, and exploration partitions. Use **arena** (`skill://arena`) for design or code bakeoffs with base selection and grafting.
+- Code crossing a function boundary → the **architect** skill (`skill://architect`). Sketch the shape in your own loop before implementing. Architect fans out to arena only for a one-way door or a contested shape.
+- Parallel fan-out that passes the spawn gate (Delegation) → the **swarm** skill (`skill://swarm`) for coverage matrices, races, gauntlets, and exploration partitions. Use **arena** (`skill://arena`) for design or code bakeoffs with base selection and grafting.
 - Contested design → the **interrogate** skill (`skill://interrogate`) (multi-model adversarial) before shipping.
 - Nontrivial multi-step → write the throughput checkpoint (Feature step 3).
 - Any prose surface, your reply to the user included → the **unslop** skill (`skill://unslop`). Write the reply per **Writing the reply**. Agent-facing prose also follows the authoring playbook (`skill://poteto-mode/playbooks/authoring-a-skill.md`) and `omp://skills.md`.
@@ -69,7 +69,7 @@ Read the leaf skill in full for any principle you apply. Each entry names when i
 
 **Delegation**
 
-- **Guard the Context Window.** Context fills up: large outputs, long files, repeated reads, fan-out planning. Route bulk to subagents, keep summaries in the main thread.
+- **Guard the Context Window.** Context fills up: large outputs, long files, repeated reads. Shrink the read first (line ranges, queries, a script that prints only the answer). Route bulk to a subagent only when you will not need the raw content afterward, per the spawn gate.
 - **Never Block on the Human.** Tempted to ask "should I do X?" on reversible work. Proceed, present the result, let the human course-correct.
 
 **Meta**
@@ -88,24 +88,36 @@ Read the leaf skill in full for any principle you apply. Each entry names when i
 
 ## Delegation
 
-`poteto-mode` is the sole router. It selects the playbook, step order, canonical role, and lifecycle protocol. The active adapter, `pstack-omp` (`skill://pstack-omp`), translates only the host mechanics.
+`poteto-mode` is the sole router. It selects the playbook, step order, role, and lifecycle protocol. The active adapter, `pstack-omp` (`skill://pstack-omp`), translates only the host mechanics.
 
-Use these canonical roles:
+**One loop by default.** The chat that receives `/skill:poteto-mode` does the work itself. It reads, plans, writes the code and its tests, verifies, and synthesizes. Its plan lives in the todo list and changes as results come in. The model that writes the plan carries it out, so it can change the plan mid-step. Every handoff costs fidelity, latency, and tokens (multi-agent runs typically spend 3 to 10 times more), so a subagent has to earn its own context.
 
-| Role | Responsibility |
+**Spawn gate.** Start a subagent only when one of these holds, and name the gate in the brief's ROLE line:
+
+1. **Context.** The child reads far more than you need afterward: long transcripts, raw traces, logs, a sweep across many sources. Tens of thousands of tokens qualify. A few thousand do not. Try a narrower read first (grep, a line range, a sqlite or `?q=` query, a script that prints only the answer), and spawn only if the bulk survives it.
+2. **Independence.** The work needs a fresh context that must not see yours: blackbox review or verification, adversarial panels, blinded judges, competing design candidates, eval candidates. Or it splits into parallel units with disjoint writes and clean interfaces, each in its own worktree, where the breadth is worth the tokens.
+3. **Conflict.** The work needs a stance, toolset, or instructions that conflict with yours, such as a comment audit of your own diff or a security lane.
+
+These never earn a spawn: a different role name (planner, implementer, tester, synthesizer), a long skill or prompt, many steps, fixed steps (write a script or codemod instead), or a summary of work you will act on next. Split by context, never by kind of work. Whoever grounds and designs a change writes it and its tests. Whoever gathers the evidence writes the conclusion.
+
+Who runs each role:
+
+| Role | Runs as |
 |---|---|
-| `explorer` | Read-only repository reconnaissance, trace reduction, narrow audits, and watchers. |
-| `planner` | Technical planning, architecture, decomposition, and non-visual design candidates. |
-| `designer` | Visual, interaction, and product-design candidates. |
-| `reviewer` | Independent code, protocol, behavioral, or security review. |
-| `researcher` | External library, framework, API, protocol, or version research. |
-| `synthesizer` | Cross-report synthesis, adjudication, and advisory judgment. |
-| `implementer` | Bounded code or test changes with settled scope. |
-| `mechanical` | Fully specified low-judgment edits. |
-| `owner` | Coupled multi-step implementation that benefits from retained session context. |
-| `watcher` | One exact generation or external-state transition, then terminate. |
+| `explorer` | You. A child only under gate 1. |
+| `planner` | You. |
+| `designer` | You. A child only as an arena candidate seat (gate 2). |
+| `researcher` | You. One child per independent source under gates 1 and 2. |
+| `implementer` | You. A child only for a disjoint parallel unit in its own worktree (gate 2). |
+| `mechanical` | You, through a codemod (`xd://ast_edit`) or a script. A child only for a large sweep split across disjoint files (gate 2). |
+| `synthesizer` | You. Synthesis needs every report and the conversation behind them. |
+| `reviewer` | A child (gate 2). Never the author of what it reviews. |
+| `owner` | A child, one per independent PR or track in the program playbooks (gate 2). |
+| `watcher` | A background `bash` job running the watch command. A child only when watching needs judgment no script can make. |
 
-Use only these canonical lifecycle protocols: **Bounded session**, **Panel**, **Long-lived owner**, and **One-shot watcher**. Their mechanics live in the active adapter. Start every Panel participant before waiting for any result. Keep implementers, reviewers, judges, and synthesizers separate. A child never starts another child; it returns proposed briefs to the root.
+A spawn uses one of these lifecycle protocols: **Bounded session**, **Panel**, **Long-lived owner**, or **One-shot watcher**. Their mechanics live in the active adapter. Start every Panel participant before waiting for any result. A reviewer or judge sees the frozen artifact, never the author's reasoning. A child never starts another child. It returns proposed briefs to the root.
+
+**Call a child like a tool.** Give it one standalone brief that carries every fact it cannot work without, and take back one structured report: verdict, conclusion, evidence as pointers, actions taken, caveats. Check the conclusion against the real artifact before you repeat it or build on it. A verifier's brief names the full check (the whole suite, the negative cases) and forbids a pass on a partial run.
 
 **Agent choice.** Every `task` item names one of the nine legal agents: `scout`, `reviewer`, `security-reviewer`, `librarian`, `task`, `sonic`, `poteto-agent`, `comment-sicko`, or `seance`. Use `poteto-agent` for any subagent you start inside a playbook step (code-writing delegates, ad-hoc helpers). The chat that receives `/skill:poteto-mode` runs the playbook. Never start a `poteto-agent` to run the playbook itself. Routed workflow skills (`how`, `why`, `interrogate`, `reflect`, `swarm`) choose their own agents for diverse-model review. Respect what the skill prescribes, don't override to `poteto-agent`.
 

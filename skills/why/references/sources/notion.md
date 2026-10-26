@@ -39,7 +39,7 @@ Use the Notion MCP. For Confluence, use the `atlassian` skill when it is install
 ## Common pitfalls
 
 - **Outdated docs.** Specs are often written before implementation and not updated. The doc may describe a plan that changed. Cross-check against the actual PR.
-- **Doc vs. reality drift.** A spec may say "we'll do X" but the code actually does Y. Flag the divergence. The synthesizer will surface the contradiction.
+- **Doc vs. reality drift.** A spec may say "we'll do X" but the code actually does Y. Flag the divergence. The parent will surface the contradiction.
 - **Boilerplate templates.** Some orgs require a "Why" section that gets filled with fluff. Look for specificity.
 - **Unlinked docs.** The most relevant doc may not be linked from anywhere. Broad keyword searches help.
 - **Multiple drafts.** If a topic has multiple docs, find the one that was finalized or most recently updated. Check dates.
@@ -51,5 +51,5 @@ For each relevant doc:
 - Title and URL
 - Authors and last-updated date
 - The motivation text (verbatim quote), with page/section location
-- Relevant linked pages (so the synthesizer can cite them)
+- Relevant linked pages (so the parent can cite them)
 - Whether the doc was finalized or draft

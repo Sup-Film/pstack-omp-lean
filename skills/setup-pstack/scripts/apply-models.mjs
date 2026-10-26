@@ -31,13 +31,13 @@ const LADDER = ["max", "xhigh", "high", "medium", "low", "minimal"];
 const ROLES = {
 	slow: { tier: "strong", use: "hardest tasks, the root session's deep work" },
 	plan: { tier: "strong", use: "multi-phase plans, architect runners" },
-	advisor: { tier: "strong", use: "judgment and prose: how explainer, why synthesizer, reflect judgment, reviewers" },
+	advisor: { tier: "strong", use: "judgment and prose: reviewers, reflect judgment and synthesis" },
 	judge: { tier: "strong", use: "arena cross-judge pool, the second opinion in a panel" },
-	task: { tier: "mid", use: "implementers: feature, bug-fix, refactoring, perf-issue, hillclimb, swarm workers" },
+	task: { tier: "mid", use: "parallel units: implementers, hillclimb arms, swarm workers, why investigators" },
 	designer: { tier: "mid", use: "UI and visual work" },
 	vision: { tier: "mid", use: "reading screenshots and design comps", images: true },
-	smol: { tier: "small", use: "explorers: how explorer, why investigators, reflect tooling" },
-	tiny: { tier: "small", use: "mechanical arms", pin: "low" },
+	smol: { tier: "small", use: "explorers for bulk reads: how explorer, reflect tooling" },
+	tiny: { tier: "small", use: "mechanical sweeps split across disjoint files", pin: "low" },
 	commit: { tier: "small", use: "commit messages", pin: "low" },
 };
 

@@ -127,16 +127,18 @@ can generate one with `/skill:create-formal-verification-skill`." On no, move on
 
 | pstack role | OMP carrier |
 |---|---|
-| judgment and prose, how explainer, why synthesizer, reflect judgment and divergent and synthesizer, historical session consults | `advisor`, through the `reviewer`, `comment-sicko`, and `seance` agents |
+| the main loop: grounding, design, implementation, tests, synthesis | the session's own model, whichever `/model` or `modelRoles.default` selects |
+| reviews, reflect judgment and divergent and synthesizer, historical session consults | `advisor`, through the `reviewer`, `comment-sicko`, and `seance` agents |
 | arena cross-judge pool, the second opinion | `judge`, through the `security-reviewer` agent |
-| feature, bug-fix, refactoring, perf-issue, hillclimb, swarm workers, arena runners, UI work | `task`, through the `task` and `poteto-agent` agents |
-| how explorer, why investigators, reflect tooling | `smol`, through the `scout` and `librarian` agents |
-| mechanical arms | `tiny`, through the `sonic` agent |
+| parallel implementation units, hillclimb arms, swarm workers, arena runners, why investigators | `task`, through the `task` and `poteto-agent` agents |
+| how explorers for bulk reads, reflect tooling | `smol`, through the `scout` and `librarian` agents |
+| mechanical sweeps split across disjoint files | `tiny`, through the `sonic` agent |
 | hardest tasks, multi-phase plans, reading screenshots | `slow`, `plan`, `vision`, consumed by OMP itself; no agent pstack spawns runs on them |
 
-`slow`, `plan`, `vision`, and `designer` have no spawnable carrier, so by default the root session does the
-hardest work itself. To put a spawnable implementer on the strongest model, point `poteto-agent` at `slow`:
-`--agent poteto-agent=@slow`.
+`poteto-mode` keeps most work in the root session, so the session's model carries feature, bug-fix,
+refactoring, perf, and investigation work. Pick that model for judgment. `slow`, `plan`, `vision`, and
+`designer` have no spawnable carrier. To put a parallel implementer on the strongest model, point
+`poteto-agent` at `slow`: `--agent poteto-agent=@slow`.
 
 Panel size is not a model list here. One `task` item is one panel member, so fan-out is how many items the
 batch carries, and independence comes from the items naming different agents.

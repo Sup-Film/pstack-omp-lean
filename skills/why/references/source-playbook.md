@@ -1,6 +1,6 @@
 # Source playbooks
 
-The why skill (`skill://why`) spawns one investigator per available evidence category, each reading a single source-specific playbook below. The playbooks are concrete examples for common MCPs. Adapt them for a different MCP in the same category, or for the installed skill or CLI that reaches that source (`atlassian` for Jira and Confluence, `slack-cli` for Slack, `gh` and `issue://<number>` for GitHub Issues). A source the session cannot reach is reported as unavailable, never invented.
+The why skill (`skill://why`) searches source control itself and spawns one investigator per other available evidence category, each reading a single source-specific playbook below. The playbooks are concrete examples for common MCPs. Adapt them for a different MCP in the same category, or for the installed skill or CLI that reaches that source (`atlassian` for Jira and Confluence, `slack-cli` for Slack, `gh` and `issue://<number>` for GitHub Issues). A source the session cannot reach is reported as unavailable, never invented.
 
 | Category | Playbook | Example MCP it documents |
 |---|---|---|

@@ -8,15 +8,17 @@ disable-model-invocation: true
 
 Investigate the motivation and intent behind code. The companion `how` skill (`skill://how`) answers what the code does and how it works. `why` answers what forces led to its shape.
 
-Every spawn is an item in the `task` tool's batch shape. Investigators use `agent: task`, except the source-control investigator, which uses `scout`. The synthesizer uses `agent: reviewer`. A task item never names a model. Each agent's model comes from `task.agentModelOverrides` and `modelRoles` in `~/.omp/agent/config.yml`, which `/skill:setup-pstack` (`skill://setup-pstack`) writes. Set an item's `effort` for the job only when the `task` schema shows an `effort` field (`task.enableEffort`). Otherwise omit it.
+You run source control and the synthesis yourself. Source control is the anchor every other source needs, and the synthesis needs every report plus that anchor, so neither survives a handoff. The other evidence categories are independent sources whose raw reads are bulky, which passes gates 1 and 2 of the spawn gate in `skill://poteto-mode` (Delegation). Each runs as one investigator.
+
+Every spawn is an item in the `task` tool's batch shape. Investigators use `agent: task`. A task item never names a model. Each agent's model comes from `task.agentModelOverrides` and `modelRoles` in `~/.omp/agent/config.yml`, which `/skill:setup-pstack` (`skill://setup-pstack`) writes. Set an item's `effort` for the job only when the `task` schema shows an `effort` field (`task.enableEffort`). Otherwise omit it.
 
 Each dispatch is one `task` call. `context` holds the question, the code anchor, and the rule that children are leaves who never call `task`. `tasks[]` holds one item per child with `name` (unique, CamelCase), `agent`, `task` (the filled prompt template), and `solutionSpace`. Read each full result at `agent://<id>`.
 
-Investigators and the synthesizer need the source tools their category uses, such as MCP tools, `gh`, a source skill, or `web_search` and `read`. Their briefs forbid writing anything except `local://` evidence files, so they stay read-only by instruction. If a child reports that a tool its source needs is missing from its session, rerun that category as `task` and record the substitution in Sources Consulted.
+Investigators need the source tools their category uses, such as MCP tools, a source skill, or `web_search` and `read`. Their briefs forbid writing anything except `local://` evidence files, so they stay read-only by instruction. If a child reports that a tool its source needs is missing from its session, rerun that category as `task` and record the substitution in Sources Consulted.
 
 ## Operating Posture
 
-Operate as a **careful, cautious, and precise investigator**. Be honest about what you know vs what you're inferring. Read `skill://why/references/epistemics.md` for the full confidence framework and phrasing guide. The synthesizer must follow it.
+Operate as a **careful, cautious, and precise investigator**. Be honest about what you know vs what you're inferring. Read `skill://why/references/epistemics.md` for the full confidence framework and phrasing guide, and follow it in the synthesis.
 
 An unavailable source is reported as unavailable. Never invent evidence for it and never fill it from memory.
 
@@ -26,9 +28,9 @@ The **target** is usually a chunk of code, a pattern, a feature, or a named desi
 
 If the target is vague ("why do we do it this way?" with no clear referent), make your best guess from conversation context (files read or edited in this session, recent changes in the working tree, what was just discussed). State your interpretation briefly so the user can redirect if you're off, then proceed.
 
-## Step 2. Establish the Code Anchor
+## Step 2. Investigate Source Control and Build the Code Anchor
 
-Before spawning investigators, build the seed context inline: file paths and line ranges, key symbols (functions, classes, constants), the last few commits touching the target, PR numbers from merge commits (pattern `(#1234)` in the subject line), and any linked ticket IDs. Run `git blame -L <start>,<end> <file>` for last-touch commits, `git log --follow -p -- <file>` for full history with patches through renames, `git log --oneline -20 -- <file>` for recent commits with PR numbers visible, and `git log -1 --format=%B <commit>` to extract PR numbers. Then pull the PR bodies and discussion for any substantive commit: `gh pr view <number> --json title,body,author,createdAt,mergedAt,labels,closingIssuesReferences,comments,reviews`. `pr://<number>` reads the same PR. This anchor goes to every investigator and to the synthesizer.
+This step is the source-control investigation. Follow `skill://why/references/sources/code-archaeology.md`. Build the anchor: file paths and line ranges, key symbols (functions, classes, constants), the commits touching the target, PR numbers from merge commits (pattern `(#1234)` in the subject line), and any linked ticket IDs. Run `git blame -L <start>,<end> <file>` for last-touch commits, `git log --follow -p -- <file>` for full history with patches through renames, `git log --oneline -20 -- <file>` for recent commits with PR numbers visible, and `git log -1 --format=%B <commit>` to extract PR numbers. Then pull the PR bodies and discussion for any substantive commit: `gh pr view <number> --json title,body,author,createdAt,mergedAt,labels,closingIssuesReferences,comments,reviews`. `pr://<number>` reads the same PR. Read patches by range, not whole histories. The anchor goes to every investigator.
 
 ## Step 3. Spawn Parallel Investigators
 
@@ -57,7 +59,7 @@ Source control is always available through git, `gh`, and `xd://github`. For the
 
 A category with no reachable source is reported unavailable in Sources Consulted. A source that fails authentication is reported unavailable too. Stop on the auth error and report the gap.
 
-Spawn one investigator per category that has a reachable source, all in a single `task` call so they run concurrently, each owning exactly one tool, MCP, or skill. Don't ask one agent to cover multiple sources. Name items `InvestigatorSourceControl`, `InvestigatorTickets`, `InvestigatorDocs`, `InvestigatorChat`, `InvestigatorObservability`, `InvestigatorErrors`, and `InvestigatorWarehouse`. Set `solutionSpace` to say that one source is given, what it holds is open, and the child gathers evidence and draws no conclusion. Never mention the other investigators in it.
+Spawn one investigator per category other than source control that has a reachable source, all in a single `task` call so they run concurrently, each owning exactly one tool, MCP, or skill. Don't ask one agent to cover multiple sources. Name items `InvestigatorTickets`, `InvestigatorDocs`, `InvestigatorChat`, `InvestigatorObservability`, `InvestigatorErrors`, and `InvestigatorWarehouse`. Set `solutionSpace` to say that one source is given, what it holds is open, and the child gathers evidence and draws no conclusion. Never mention the other investigators in it. When only one other category is reachable and its evidence is a handful of tickets or pages, read it yourself instead.
 
 Each investigator's prompt is `skill://why/references/investigator-prompt.md` filled in, plus:
 - the category playbook `skill://why/references/sources/<source>.md` for the selected source, adapted from the examples in `skill://why/references/source-playbook.md`
@@ -68,7 +70,7 @@ Each investigator's prompt is `skill://why/references/investigator-prompt.md` fi
 
 Each category below is uniquely positioned to surface one shape of "why", shown after "Best at". Use it to know what to expect back, to name a gap when a category returns empty, and, only in the rare provably-irrelevant case, to justify a skip.
 
-1. **Source control** (git history, `gh` for PRs, code comments, tests). Always spawn, the only guaranteed source. Best at *implementation-time rationale captured during review*.
+1. **Source control** (git history, `gh` for PRs, code comments, tests). Always searched, by you in Step 2, the only guaranteed source. Best at *implementation-time rationale captured during review*.
 2. **Issue / ticket tracker** (e.g. Linear, Jira, GitHub Issues, Plane, Shortcut). Best at *the product or business forcing function*. Strongest when the why is external to engineering.
 3. **Long-form documents** (e.g. Notion, Confluence, Google Docs, Coda). Best at *long-form design rationale*, written out before it becomes code.
 4. **Real-time team chat** (e.g. Slack, Discord, Microsoft Teams, Mattermost). Best at *real-time deliberation that never reached a doc*. Especially important when the source control, ticket, and doc paper trail is thin.
@@ -87,20 +89,15 @@ If your scope assessment suggests a single-commit trivial target where the PR de
 
 ## Step 4. Synthesize
 
-Wait for every investigator, then freeze their findings. Spawn one synthesizer as a fresh session in one `task` item with `agent: reviewer`. It gets:
-1. The investigator findings, including any null results and any categories skipped with justification. When the findings run long, write each to `local://why-<category>.md` and pass the paths.
-2. The code anchor
-3. The user's original question
-4. The epistemics framework from `skill://why/references/epistemics.md`
-5. The synthesizer prompt template from `skill://why/references/synthesizer-prompt.md`
+Wait for every investigator. Write the answer yourself from your Step 2 findings and every report, following `skill://why/references/synthesis.md` and the epistemics framework in `skill://why/references/epistemics.md`. Include null results and categories skipped with justification.
 
 ## Step 5. Present
 
-Present the synthesizer's output to the user. You may lightly edit for clarity or add context from the conversation, but **do not rewrite the confidence language**.
+Present the synthesis. Keep the confidence language exact.
 
 ## Output Format
 
-The structure is the one in `skill://why/references/synthesizer-prompt.md`: The Question, The Code in Question, What We Found, What We Can Reasonably Infer, Competing Hypotheses, What We Don't Know, Sources Consulted, Confidence Summary. Adapt as needed, but keep the confidence separation intact, and keep Sources Consulted as one line per investigator, including the ones that returned nothing or were skipped, with the reason.
+The structure is the one in `skill://why/references/synthesis.md`: The Question, The Code in Question, What We Found, What We Can Reasonably Infer, Competing Hypotheses, What We Don't Know, Sources Consulted, Confidence Summary. Adapt as needed, but keep the confidence separation intact, and keep Sources Consulted as one line per evidence category, including the ones that returned nothing or were skipped, with the reason.
 
 After Sources Consulted, if the user's `why` question is a precursor to changing this code, convert the lineage findings into a Preserve / Change / Avoid / Risk constraint set for planning the change.
 

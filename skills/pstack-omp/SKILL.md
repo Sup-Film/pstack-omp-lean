@@ -5,28 +5,26 @@ description: "OMP adapter for poteto-mode. Maps canonical pstack roles and lifec
 
 # pstack on OMP
 
-`poteto-mode` is the sole router. It selects the playbook, canonical role, step order, and lifecycle protocol. This adapter translates those choices to OMP only. It never selects a playbook, repeats the playbook index, or changes a playbook gate.
+`poteto-mode` is the sole router. It selects the playbook, canonical role, step order, and lifecycle protocol, and its spawn gate decides whether a role runs in the root or in a child. This adapter translates those choices to OMP only. It never selects a playbook, repeats the playbook index, or changes a playbook gate. Everything below applies only after the spawn gate passes.
 
 While this skill is active, its role map is the specific pstack execution contract. Generic OMP instructions remain valid outside pstack work.
 
 ## Canonical role map
 
-Use these exact OMP agent names.
+Use these exact OMP agent names when a role runs as a child.
 
 | Canonical role | OMP agent |
 |---|---|
 | `explorer` | `scout` |
-| `watcher` | `scout` |
-| `planner` | `task` |
 | `designer` | `task` |
 | `reviewer` | `reviewer` |
 | `researcher` | `librarian` |
-| `synthesizer` | `reviewer` |
 | `implementer` | `poteto-agent` |
 | `owner` | `poteto-agent` |
 | `mechanical` | `sonic` |
+| `watcher` | a background `bash` job; `scout` only when watching needs judgment |
 
-Role responsibilities live in `skill://poteto-mode`. This table only names the agent.
+`planner` and `synthesizer` always run in the root and have no agent. Role responsibilities and the spawn gate live in `skill://poteto-mode`. This table only names the agent.
 
 The canonical OMP roster is closed:
 
@@ -46,9 +44,9 @@ A canonically routed task item's `agent` value must be one of those bundled name
 
 `poteto-agent` runs `implementer` and `owner` work in poteto's style. `comment-sicko` audits comments for imported skills that name it directly.
 
-### Planning and design
+### Planning, design, and synthesis
 
-The imported warning about a built-in planning subagent describes a source-host mechanism that bypassed the skill contract. This OMP version has no bundled `plan` agent and no `designer` agent. Canonical `planner` and `designer` work uses `task`. The brief carries the specialization, such as technical planning or visual and interaction design, and no source-host subagent fields.
+This OMP version has no bundled `plan` agent and no `designer` agent. Planning and synthesis stay in the root, which already holds the context they need. A `designer` child exists only as an arena candidate seat and uses `task`. The brief carries the specialization, such as visual and interaction design, and no source-host subagent fields.
 
 ### Security review
 
@@ -116,7 +114,7 @@ Use one batch call for independent participants:
 
 Each `name` is unique. `context` contains common immutable material. Each item still names its exact role, slice, acceptance criteria, verification, forbidden work, and report contract.
 
-Start every participant in one batch before consuming any verdict. Separate writers with isolated workspaces or disjoint output paths. Freeze candidate artifacts before starting reviewers. Freeze reviewer reports before starting a separate synthesizer session.
+Start every participant in one batch before consuming any verdict. Separate writers with isolated workspaces or disjoint output paths. Freeze candidate artifacts before starting reviewers. Freeze reviewer reports before the root synthesizes them.
 
 `task.maxConcurrency` caps simultaneous children at 32 by default; a larger batch queues rather than failing.
 
@@ -143,7 +141,7 @@ A dispatch is forbidden until its brief contains:
 One-sentence outcome executable by a stranger.
 
 **ROLE**  
-The canonical role, mapped OMP agent, authority, and expected stance.
+The canonical role, mapped OMP agent, the spawn gate it passes (context, independence, or conflict), authority, and expected stance.
 
 **SCOPE**  
 Writable and non-writable paths, exact slice or race arm, worktree and branch where applicable, and every output path. State the one-writer assignment.
@@ -155,7 +153,7 @@ Repository root, relevant source paths, base SHA, frozen artifacts, active skill
 Checkable observable outcomes, one per line.
 
 **VERIFY**  
-Exact commands, fixtures, runtime probes, comparison baselines, environment requirements, and known false-positive or false-negative risks.
+Exact commands, fixtures, runtime probes, comparison baselines, environment requirements, and known false-positive or false-negative risks. A verifier's brief names the complete check, including negative cases that must fail, and forbids `PASS` on a partial run.
 
 **TIMEBOX**  
 A rough cap. At the cap, return partial evidence and stop instead of broadening scope.
@@ -164,7 +162,7 @@ A rough cap. At the cap, return partial evidence and stop instead of broadening 
 At minimum: no child task calls; no subagent spawning; no out-of-scope fixes; no unrequested migrations; no shared-path edits outside ownership; no merge; no direct user questions; no completion claim without executed verification.
 
 **REPORT**  
-Require `PASS | ISSUES | BLOCKED`, semantic session name, branch and exact SHAs where applicable, verdict and evidence, changed files or artifacts, actual verification commands and results, deviations, unresolved risks, and parent actions.
+One shape for every child, so the root can check it: `PASS | ISSUES | BLOCKED`, the conclusion, evidence as pointers (`file:line`, command and result, artifact path), actions taken (changed files, commands run), caveats and confidence, deviations, unresolved risks, parent actions, and branch and exact SHAs where applicable. When `task.structured` is on, pass this as `outputSchema`.
 
 **STANDING**  
 Copy the active playbook's standing policy text verbatim when it supplies one.
@@ -193,10 +191,9 @@ A role or unit change requires a fresh task.
 5. Ignore duplicate terminal delivery.
 6. Freeze implementation artifacts, branches, head SHAs, reports, and hashes.
 7. Start every independent reviewer in a new batch only after the candidates are frozen.
-8. Freeze verdicts before starting a separate `reviewer` when synthesis is needed.
-9. Treat synthesis as advice. The root selects and verifies.
+8. Freeze verdicts. The root synthesizes them, selects, and verifies.
 
-Do not mix implementers, reviewers, or synthesizers in one session. Do not let reviewers race a moving head.
+Do not mix implementers and reviewers in one session. Do not let reviewers race a moving head.
 
 ### Long-lived owner
 
@@ -210,14 +207,15 @@ Do not mix implementers, reviewers, or synthesizers in one session. Do not let r
 
 ### One-shot watcher
 
-1. Start one background `scout` task.
-2. Put the exact branch, head SHA, generation, watched predicate, stop predicate, and timebox in the brief.
-3. Require one meaningful event and a terminal report.
-4. Discard a report whose generation no longer matches.
-5. Start a fresh watcher for each new generation.
-6. Stand down when the stop predicate is met or the work is superseded.
+A watch is fixed steps, so it runs as a tool, not a model loop.
 
-A watcher observes. It does not fix, merge, authorize, or silently follow a changed head.
+1. Run the watch command (for example `watch-pr` for a PR) as a background `bash` job with `async: true`, or `timeout: 0` when it may outlast the default deadline. Its result auto-delivers.
+2. Pin the exact branch, head SHA, or generation in the command's arguments.
+3. Discard a result whose generation no longer matches.
+4. Start a fresh job for each new generation.
+5. Stop the job with `write proc://<id>/kill` when the stop predicate is met or the work is superseded.
+
+Start a `scout` task instead only when watching needs judgment no command can make, such as reading a post-merge failure to decide whether it is a revert. Its brief pins the branch, head SHA, generation, watched predicate, stop predicate, and timebox, and it reports one meaningful event. A watcher observes. It does not fix, merge, authorize, or silently follow a changed head.
 
 ## Interactions and decisions
 
@@ -228,7 +226,7 @@ The root resolves a child question and sends the answer with `write agent://<id>
 ## Ownership and verification
 
 - One writer per branch, worktree, mutable state, and output path.
-- Separate sessions own implementation, review, judgment, and synthesis.
+- The author of a change never reviews or judges it. The root owns synthesis.
 - A task stays inside its assigned unit and role.
 - Isolate concurrent writers unless their outputs are structurally disjoint.
 - A worker's report never verifies its own work.

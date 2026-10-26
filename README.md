@@ -7,6 +7,10 @@ Upstream pstack targets Cursor. This repository tracks it and rewrites every hos
 `task` batches instead of Cursor `Task` calls, agents instead of per-call model slugs, `skill://` instead of
 relative paths, `agent://` and `history://` instead of cloud-agent URLs.
 
+This fork tunes the catalog toward one agent loop, per Anthropic's
+[When to fold subagents into your main agent loop](https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop).
+See [Single-loop tuning](#single-loop-tuning).
+
 ## Catalog
 
 | Group | Skills |
@@ -107,6 +111,26 @@ the physical directory under any install root.
   leaf-agent boundary in every assignment.
 - Read complete results from `agent://<id>` and transcripts from `history://<id>`.
 - Keep user interaction, approvals, integration, and final verification with the root coordinator.
+
+## Single-loop tuning
+
+Upstream pstack delegates by role: explorers read, a planner plans, an implementer writes, a synthesizer
+summarizes. Each handoff drops context, adds a nested model loop, and multiplies tokens. This fork keeps that
+work in the chat that runs `/skill:poteto-mode` and spawns a subagent only past one gate, defined once in
+`poteto-mode`'s Delegation section:
+
+1. **Context.** The child reads far more than the root needs afterward, and a narrower read cannot shrink it.
+2. **Independence.** The work needs a fresh context: review, verification, judging, competing candidates, or
+   parallel units with disjoint writes.
+3. **Conflict.** The work needs a stance or toolset that conflicts with the root's.
+
+What changed for the user: feature, bug-fix, perf, hillclimb, and refactoring work is written by the root
+with its tests; `how` and `why` synthesize in the root; PR opening and watches run as commands, not
+subagents. Review panels (`interrogate`, `no-comments`, the trail review), `arena`, `swarm`, `eval`, the
+`why` investigators for non-git sources, and the program playbooks' parallel owners still spawn.
+
+[`docs/single-loop/inventory.tsv`](docs/single-loop/inventory.tsv) lists every spawn site with its verdict
+and reason. [`docs/single-loop/decisions.tsv`](docs/single-loop/decisions.tsv) is the decision trail.
 
 ## Provenance
 

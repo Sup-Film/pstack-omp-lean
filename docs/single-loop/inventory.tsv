@@ -1,0 +1,34 @@
+site	before	verdict	gate	reason
+poteto-mode Delegation	ten canonical roles, root delegates by default	fold	-	root runs one loop; roles become a table of who runs each one and when a spawn earns its context
+feature step 4	implementer Bounded session writes every change	fold	-	the agent that grounded and designed the change holds its context; splitting design from code from tests is a problem-type split
+feature fan-out	single owner fans out internally	as-tool	parallel	only disjoint components with a clean interface, each in its own worktree
+bug-fix steps 2-3	investigation and fix delegated	fold	-	whoever found the mechanism writes the fix; the handoff would lose the runtime evidence
+perf-issue step 3	implementer Bounded session	fold	-	same as bug-fix: the trace reader writes the fix
+hillclimb step 5	implementer per attempt	fold	-	root makes each attempt; parallel worktrees stay for independent live hypotheses
+hillclimb parallel hypotheses	one subagent per hypothesis	keep	parallel	independent experiments in separate worktrees
+refactoring step 5	mechanical Bounded session	fold	-	fixed steps are a script: codemod or ast_edit run by the root
+opening-a-pr opener	mechanical subagent commits, pushes, opens PR	fold	-	fixed steps; the root already holds the frozen diff
+how simple path	one explainer subagent explores and explains	fold	-	the root reads and explains; the explainer re-read what the root then presents
+how complex path	2-4 scout explorers then a reviewer explainer	as-tool	context	explorers only when a slice reads far more than the root needs afterward; the root writes the explanation
+why investigators	one per evidence category including source control	keep	parallel+context	independent sources, bulky raw reads; source control folds into the root's code-anchor step
+why synthesizer	reviewer subagent synthesizes	fold	-	the root holds the anchor and every report; a second handoff loses detail
+reflect lens reviewers	three lens subagents	keep	parallel	independent lenses over a bulky transcript
+reflect synthesizer	reviewer subagent synthesizes	keep	independence	the root is the author of the conversation under review; judging which criticisms of itself to accept is self-review
+architect Phase B	arena on every function-boundary change	as-tool	parallel	root sketches two shapes in its own loop; arena only for a one-way door or a contested shape
+arena runners and judge	N candidates plus a blind judge	keep	parallel	independent candidates and blackbox judging
+interrogate reviewers	one reviewer per seat	keep	parallel	blackbox adversarial review; root already does lead judgment
+swarm workers	N workers	keep	parallel	coverage, races, verification lanes; gated on independence
+no-comments	comment-sicko	keep	conflict	audit stance conflicts with the author's
+show-me-your-work trail review	cross-model reviewer	keep	parallel	independent review of the trail
+eval candidates and judge	N candidates plus blinded judge	keep	parallel	measuring agent behavior needs fresh contexts
+multi-phase-plan step 3	explorer Panel	fold	-	root explores; Panel only for independent subsystems that read far more than the plan needs
+multi-phase-plan live lanes	ten swarm lanes per PR	keep	independence	blackbox verification; check-plan.mjs enforces exactly ten lanes, so the count is unchanged here
+runtime-forensics step 2	explorer reduces the artifact	fold	-	root queries the artifact; a spawn only when the raw read itself is the bulk
+trace-forensics step 1	explorer parses the artifact	fold	-	root loads it into sqlite and queries; the tool returns less
+session-pickup step 1	explorer parses long transcript	as-tool	context	only for a transcript too long to read by range
+worktree-cleanup step 3	explorers read transcripts	keep	context	transcripts are bulk the root never needs afterward
+automate-me history slices	parallel scouts	keep	parallel+context	independent slices of bulky history
+maintain-verification-skill source wave	one scout per feature file	keep	parallel	independent features
+maintain-formal-verification-skill	scouts per area on large diff	keep	context	already gated on a large diff
+One-shot watcher	scout task polls	fold	-	fixed steps: a background bash job runs the watch command and its result auto-delivers
+autopilot / orchestrate owners	one owner per PR or track	keep	parallel	independent PRs in separate worktrees

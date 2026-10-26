@@ -43,7 +43,7 @@ Installing changes nothing until the user invokes a skill. Offer to word their f
 
 Host mechanics live in the **pstack-omp** adapter skill (`skill://pstack-omp`). It maps pstack's roles and lifecycle protocols to OMP's `task` agents, batches, follow-up messages, and result resources. Point there when the question is about how a playbook spawns, messages, or collects subagents.
 
-If cost is the worry, say where the tokens go and how to spend fewer. pstack spends extra tokens on subagents and review panels. Rerun `/skill:setup-pstack` and pick a smaller budget or cheaper models. A role left unset runs on the session's model, which saves tokens when the session runs a cheaper model. Save `/skill:poteto-mode` for work that needs rigor.
+If cost is the worry, say where the tokens go and how to spend fewer. `poteto-mode` keeps most work in one loop and spawns only for bulk reads, independent review or verification, and parallel units, so most tokens go to the session's own model and to review panels. Rerun `/skill:setup-pstack` and pick a smaller budget or cheaper models for the spawned agents. Save `/skill:poteto-mode` for work that needs rigor.
 
 pstack is a Cursor plugin upstream, and this repository ports it to OMP. The skills use the Agent Skills format. Where Cursor has a product surface with no OMP equal, such as Custom Modes, the ported skill says so.
 
@@ -53,7 +53,7 @@ pstack is a Cursor plugin upstream, and this repository ports it to OMP. The ski
 
 Typing `/skill:poteto-mode` attaches the skill to that message. It fades as the chat moves on. This port has no Custom Mode that keeps a skill in context on every turn, so start each new task with `/skill:poteto-mode`. Follow-ups such as "continue" work while the task is still in context. Mid-chat, "new task" makes the mode match a fresh playbook.
 
-`/skill:poteto-mode` already uses `poteto-agent` for the subagents its playbook steps spawn. To get the same style from a subagent of your own, spawn it with the `task` tool and `agent: "poteto-agent"`. The repository README says where to place the `poteto-agent` definition.
+`/skill:poteto-mode` uses `poteto-agent` for the few subagents its playbook steps still spawn, such as a parallel implementation unit. To get the same style from a subagent of your own, spawn it with the `task` tool and `agent: "poteto-agent"`. The repository README says where to place the `poteto-agent` definition.
 
 ## Pick a skill
 
