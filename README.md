@@ -1,5 +1,7 @@
 # pstack-omp-lean
 
+English | [ภาษาไทย](README.th.md)
+
 Lauren Tan's [pstack](https://github.com/cursor/plugins/tree/main/pstack) skill catalog for
 [OMP](https://omp.sh/), installable as an OMP plugin and tuned to run most work in one agent loop.
 
@@ -7,7 +9,9 @@ It builds on [`dsebban/skills`](https://github.com/dsebban/skills), the OMP port
 every Cursor mechanism to OMP: `task` batches, role-based model routing, `skill://`, `agent://`, and
 `history://`. This repository keeps the port and changes when the catalog spawns subagents. It follows
 Anthropic's [When to fold subagents into your main agent loop](https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop)
-and poteto's own [pstack guide](https://x.com/poteto/status/2097732320606507506).
+and poteto's own [pstack guide](https://x.com/poteto/status/2097732320606507506). A Thai summary of that
+guide, written in our own words and compared against this repository, is in
+[`docs/pstack-guide-notes.th.md`](docs/pstack-guide-notes.th.md).
 
 ## Install
 
